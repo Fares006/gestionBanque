@@ -1,0 +1,8 @@
+CPT*Compte Courant
+CPT*Livret A
+OPE*01/01/2024*Supermarché*Compte Courant*45.30*CB*True*alimentation
+OPE*05/01/2024*Cinéma*Compte Courant*12.00*CB*False*sorties
+OPE*10/01/2024*Virement Épargne*Compte Courant*100.00*VIR*True*épargne
+BUD*alimentation*500.00*Compte Courant
+BUD*sorties*200.00*Compte Courant
+BUD*épargne*300.00*Livret A
