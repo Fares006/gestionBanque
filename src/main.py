@@ -240,14 +240,18 @@ def login(dictionnaire_id: dict) -> tuple[bool, str] | bool:
     trouve = False
     while not trouve:
         identifiant = input('Veuillez saisir votre identifiant : ')
-        if identifiant not in dictionnaire_id.keys():
+        if len(identifiant) != 8:
+            print('L\'identifiant doit faire 8 caractères.')
+        elif identifiant not in dictionnaire_id.keys():
             print('Identifiant introuvable.')
         else:
             trouve = True
 
     while nb_essais < 5:
         mdp = input('Veuillez saisir votre mot de passe : ')
-        if mdp != dictionnaire_id[identifiant][0]:
+        if len(mdp) != 6:
+            print('Le mot de passe doit faire 6 caractères.')
+        elif mdp != dictionnaire_id[identifiant][0]:
             nb_essais += 1
             print(f"Mot de passe incorrect. Vous avez {5 - nb_essais} essais restants.")
         else:
