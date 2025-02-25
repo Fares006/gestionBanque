@@ -15,7 +15,7 @@ def import_idents(chemin_fichier: str, cle: int = CLE_CRYPTAGE) -> dict:
     l'identifiant, le mot de passe, le nom et la clé de cryptage du fichier de l'utilisateur.
 
     Args:
-        chemin_fichier: le chemin absolu du fichier ident.txt
+        chemin_fichier: le chemin relatif du fichier ident.txt
         cle: clé de cryptage du fichier (en dur)
 
     Returns:
@@ -52,7 +52,7 @@ def import_comptes(chemin_fichier: str, cle: int = CLE_CRYPTAGE) -> list:
     Importe le contenu relatif aux comptes du fichier id.txt et renvoie la liste des comptes.
 
     Args:
-        chemin_fichier: le chemin absolu du fichier id.txt
+        chemin_fichier: le chemin relatif du fichier id.txt
         cle: clé de cryptage du fichier (en dur)
 
     Returns:
@@ -93,7 +93,7 @@ def import_operations(chemin_fichier: str, cle: int = CLE_CRYPTAGE) -> list:
       - Le budget concerné (str).
 
     Args:
-        chemin_fichier: le chemin absolu du fichier id.txt
+        chemin_fichier: le chemin relatif du fichier id.txt
         cle: clé de cryptage du fichier (en dur)
 
     Returns:
@@ -141,7 +141,7 @@ def import_budgets(chemin_fichier: str, cle: int = CLE_CRYPTAGE) -> list:
       - Le compte associé (str).
 
     Args:
-        chemin_fichier: le chemin absolu du fichier id.txt
+        chemin_fichier: le chemin relatif du fichier id.txt
         cle: clé de cryptage du fichier (en dur)
 
     Returns:
@@ -255,6 +255,21 @@ def login(dictionnaire_id: dict) -> tuple[bool, str] | bool:
     return False
 
 
+def calcul_solde(lst_op: list) -> float:
+    """
+    Calcule le solde d'un utilisateur grâce à la liste des opérations associées au compte.
+
+    Args:
+        lst_op: liste des opérations
+
+    Returns:
+        le montant du compte
+    """
+    solde = 0
+    for i in range(len(lst_op)):
+        solde += lst_op[i][3]
+    return solde
+
 def identification():
     """
     Fonction qui gère le comportement du logiciel, en fonction des entrées de l'utilisateur.
@@ -262,13 +277,17 @@ def identification():
     Returns:
 
     """
-    ident = import_idents(chemin_fichier='../../gestionBudget/src/ident.txt')
-    login_state = login(dictionnaire_id=ident)
+    dict_ident = import_idents(chemin_fichier='./ident.txt')
+    login_state = login(dictionnaire_id=dict_ident)
+    identifiant = login_state[1]
     if login_state[0]:
-        cpt = import_comptes(chemin_fichier=f'../../gestionBudget/users/{login_state[1]}.txt')
-        op = import_operations(chemin_fichier=f'../../gestionBudget/users/{login_state[1]}.txt')
-        bud = import_budgets(chemin_fichier=f'../../gestionBudget/users/{login_state[1]}.txt')
-        print(cpt, op, bud, sep='\n')
+        lst_cpt = import_comptes(chemin_fichier=f'../users/{identifiant}.txt')
+        lst_op = import_operations(chemin_fichier=f'../users/{identifiant}.txt')
+        lst_bud = import_budgets(chemin_fichier=f'../users/{identifiant}.txt')
+        solde = calcul_solde(lst_op)
+        print(f"\n|-----Tableau de bord-----|\n"
+              f"| Bonjour {dict_ident[identifiant][1]} |\n"
+              f"| Vous avez {solde}€ sur votre compte |")
 
 
 # --Programme principal-- #

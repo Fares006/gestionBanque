@@ -53,21 +53,21 @@ def decrypter_fichier(path: str) -> None:
 #   --------------------------------------------------------------------------------------  #
 #   Bloc de cryptage de tous les fichiers :
 
-#   crypter_fichier(path='../../gestionBudget/src/ident.txt')
-#   crypter_fichier(path='../../gestionBudget/users/19283746.txt')
-#   crypter_fichier(path='../../gestionBudget/users/23456789.txt')
-#   crypter_fichier(path='../../gestionBudget/users/34567890.txt')
-#   crypter_fichier(path='../../gestionBudget/users/56789012.txt')
-#   crypter_fichier(path='../../gestionBudget/users/87654321.txt')
+#   crypter_fichier(path='./ident.txt')
+#   crypter_fichier(path='../users/19283746.txt')
+#   crypter_fichier(path='../users/23456789.txt')
+#   crypter_fichier(path='../users/34567890.txt')
+#   crypter_fichier(path='../users/56789012.txt')
+#   crypter_fichier(path='../users/87654321.txt')
 #   --------------------------------------------------------------------------------------  #
 
 #   -------------------------------------------------------------------------------------- #
 #   Bloc de décryptage de tous les fichiers :
 
-#   decrypter_fichier(path='../../gestionBudget/src/ident.txt')
-#   decrypter_fichier(path='../../gestionBudget/users/19283746.txt')
-#   decrypter_fichier(path='../../gestionBudget/users/23456789.txt')
-#   decrypter_fichier(path='../../gestionBudget/users/34567890.txt')
-#   decrypter_fichier(path='../../gestionBudget/users/56789012.txt')
-#   decrypter_fichier(path='../../gestionBudget/users/87654321.txt')
+#   decrypter_fichier(path='./ident.txt')
+#   decrypter_fichier(path='../users/19283746.txt')
+#   decrypter_fichier(path='../users/23456789.txt')
+#   decrypter_fichier(path='../users/34567890.txt')
+#   decrypter_fichier(path='../users/56789012.txt')
+#   decrypter_fichier(path='../users/87654321.txt')
 #   --------------------------------------------------------------------------------------  #
