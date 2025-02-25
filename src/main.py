@@ -3,7 +3,7 @@
 #   |--Groupe 2 (MOUSSA, ASSEMAT, JIN, ZAMOURI)--|   #
 #   |--------------------------------------------|   #
 # --Imports-- #
-from crypter_decrypter_fichier import crypter_fichier, decrypter_fichier
+
 # --Constantes-- #
 CLE_CRYPTAGE = 23
 

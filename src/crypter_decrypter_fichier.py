@@ -3,7 +3,7 @@
 #   |--Groupe 2 (MOUSSA, ASSEMAT, JIN, ZAMOURI)--|   #
 #   |--------------------------------------------|   #
 # --Imports-- #
-from main import cryptage, decryptage, CLE_CRYPTAGE
+from src.main import cryptage, decryptage, CLE_CRYPTAGE
 # --Constantes-- #
 
 
