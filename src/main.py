@@ -263,12 +263,13 @@ def identification():
     Returns:
 
     """
-    ident = import_idents(chemin_fichier='C:/Users/MSI/PycharmProjects/gestionBudget/src/ident.txt')
+    ident = import_idents(chemin_fichier='../../gestionBudget/src/ident.txt')
     login_state = login(dictionnaire_id=ident)
     if login_state[0]:
-        cpt = import_comptes(chemin_fichier=f'C:/Users/MSI/PycharmProjects/gestionBudget/users/{login_state[1]}.txt')
-        op = import_operations(chemin_fichier=f'C:/Users/MSI/PycharmProjects/gestionBudget/users/{login_state[1]}.txt')
-        bud = import_budgets(chemin_fichier=f'C:/Users/MSI/PycharmProjects/gestionBudget/users/{login_state[1]}.txt')
+        cpt = import_comptes(chemin_fichier=f'../../gestionBudget/users/{login_state[1]}.txt')
+        op = import_operations(chemin_fichier=f'../../gestionBudget/users/{login_state[1]}.txt')
+        bud = import_budgets(chemin_fichier=f'../../gestionBudget/users/{login_state[1]}.txt')
 
 
 # --Programme principal-- #
+identification()
