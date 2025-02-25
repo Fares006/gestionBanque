@@ -50,6 +50,7 @@ def decrypter_fichier(path: str) -> None:
 
 # --Programme principal-- #
 
+#   --------------------------------------------------------------------------------------  #
 #   Bloc de cryptage de tous les fichiers :
 
 #   crypter_fichier(path='C:/Users/MSI/PycharmProjects/gestionBudget/src/ident.txt')
@@ -59,6 +60,8 @@ def decrypter_fichier(path: str) -> None:
 #   crypter_fichier(path='C:/Users/MSI/PycharmProjects/gestionBudget/users/56789012.txt')
 #   crypter_fichier(path='C:/Users/MSI/PycharmProjects/gestionBudget/users/87654321.txt')
 #   --------------------------------------------------------------------------------------  #
+
+#   -------------------------------------------------------------------------------------- #
 #   Bloc de décryptage de tous les fichiers :
 
 #   decrypter_fichier(path='C:/Users/MSI/PycharmProjects/gestionBudget/src/ident.txt')
@@ -67,3 +70,4 @@ def decrypter_fichier(path: str) -> None:
 #   decrypter_fichier(path='C:/Users/MSI/PycharmProjects/gestionBudget/users/34567890.txt')
 #   decrypter_fichier(path='C:/Users/MSI/PycharmProjects/gestionBudget/users/56789012.txt')
 #   decrypter_fichier(path='C:/Users/MSI/PycharmProjects/gestionBudget/users/87654321.txt')
+#   --------------------------------------------------------------------------------------  #

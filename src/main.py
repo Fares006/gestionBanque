@@ -226,32 +226,32 @@ def decryptage(chaine: str, cle: int = CLE_CRYPTAGE) -> str:
     return decrypte
 
 
-def login(db: dict) -> bool:
+def login(dictionnaire_id: dict) -> tuple[bool, str] | bool:
     """
-    Permet à l'utilisateur de saisir ses identifiants de connexion et renvoie un booléen.
+    Permet à l'utilisateur de saisir ses identifiants de connexion et renvoie un tuple booléen-identifiant.
 
     Args:
-        db: Le fichier ident.txt qui joue le role de base de données
+        dictionnaire_id: Le fichier ident.txt qui joue le role de base de données
 
     Returns:
-        True si l'identifiant et le mot de passe sont corrects, False sinon
+        un tuple avec True si l'identifiant et le mot de passe sont corrects ainsi que l'identifiant, False sinon.
     """
     nb_essais = 0
     trouve = False
     while not trouve:
         identifiant = input('Veuillez saisir votre identifiant : ')
-        if identifiant not in db.keys():
+        if identifiant not in dictionnaire_id.keys():
             print('Identifiant introuvable.')
         else:
             trouve = True
 
     while nb_essais < 5:
         mdp = input('Veuillez saisir votre mot de passe : ')
-        if mdp != db[identifiant][0]:
+        if mdp != dictionnaire_id[identifiant][0]:
             nb_essais += 1
             print(f"Mot de passe incorrect. Vous avez {5 - nb_essais} essais restants.")
         else:
-            return True
+            return True, identifiant
 
     return False
 
@@ -263,20 +263,12 @@ def identification():
     Returns:
 
     """
-    pass
+    ident = import_idents(chemin_fichier='C:/Users/MSI/PycharmProjects/gestionBudget/src/ident.txt')
+    login_state = login(dictionnaire_id=ident)
+    if login_state[0]:
+        cpt = import_comptes(chemin_fichier=f'C:/Users/MSI/PycharmProjects/gestionBudget/users/{login_state[1]}.txt')
+        op = import_operations(chemin_fichier=f'C:/Users/MSI/PycharmProjects/gestionBudget/users/{login_state[1]}.txt')
+        bud = import_budgets(chemin_fichier=f'C:/Users/MSI/PycharmProjects/gestionBudget/users/{login_state[1]}.txt')
+
+
 # --Programme principal-- #
-
-
-test_ident = import_idents(chemin_fichier='C:/Users/MSI/PycharmProjects/gestionBudget/src/ident.txt')
-print(test_ident)
-
-test_cpt = import_comptes(chemin_fichier='C:/Users/MSI/PycharmProjects/gestionBudget/users/19283746.txt')
-print(test_cpt)
-
-test_op = import_operations(chemin_fichier='C:/Users/MSI/PycharmProjects/gestionBudget/users/19283746.txt')
-print(test_op)
-
-test_bud = import_budgets(chemin_fichier='C:/Users/MSI/PycharmProjects/gestionBudget/users/19283746.txt')
-print(test_bud)
-
-print(login(db=test_ident))
