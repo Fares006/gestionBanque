@@ -1,8 +1,0 @@
-CPT*Compte Perso
-CPT*Compte Épargne Retraite
-OPE*06/01/2024*Facture Internet*Compte Perso*29.99*CB*True*charges
-OPE*11/01/2024*Vêtements Soldes*Compte Perso*120.00*CB*False*shopping
-OPE*18/01/2024*Placement Épargne*Compte Perso*500.00*VIR*True*épargne
-BUD*charges*100.00*Compte Perso
-BUD*shopping*250.00*Compte Perso
-BUD*épargne*600.00*Compte Épargne Retraite
