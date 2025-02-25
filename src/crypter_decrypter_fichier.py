@@ -55,4 +55,3 @@ crypter_fichier(path='C:/Users/MSI/PycharmProjects/gestionBudget/users/23456789.
 crypter_fichier(path='C:/Users/MSI/PycharmProjects/gestionBudget/users/34567890.txt')
 crypter_fichier(path='C:/Users/MSI/PycharmProjects/gestionBudget/users/56789012.txt')
 crypter_fichier(path='C:/Users/MSI/PycharmProjects/gestionBudget/users/87654321.txt')
-

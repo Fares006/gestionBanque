@@ -24,8 +24,8 @@ def import_idents(chemin_fichier: str, cle: int = CLE_CRYPTAGE) -> dict:
     # Ouverture du fichier et initialisation des variables nécessaires
     idents = open(file=chemin_fichier, mode='r', encoding="utf-8")
     dict_ident = dict()
-
     ligne = idents.readline()
+    ligne = decryptage(ligne)
     while ligne != '':
         num_champ = 0   # Numéro des champs, 0: identifiant, 1: mdp, 2: username, 3: clé de cryptage
         champ = ''
@@ -43,6 +43,7 @@ def import_idents(chemin_fichier: str, cle: int = CLE_CRYPTAGE) -> dict:
             else:
                 champ += char
         ligne = idents.readline()
+        ligne = decryptage(ligne)
 
     idents.close()
     return dict_ident
@@ -62,6 +63,7 @@ def import_comptes(chemin_fichier: str, cle: int = CLE_CRYPTAGE) -> list:
     fichier = open(file=chemin_fichier, mode='r', encoding="utf-8")
     liste_comptes = []
     ligne = fichier.readline()
+    ligne = decryptage(ligne)
     while ligne != '':
         if ligne[0] != 'C':
             break   # On se permet un break ici, car les lignes de compte sont en premier.
@@ -77,6 +79,7 @@ def import_comptes(chemin_fichier: str, cle: int = CLE_CRYPTAGE) -> list:
                 else:
                     champ += char
         ligne = fichier.readline()
+        ligne = decryptage(ligne)
     fichier.close()
     return liste_comptes
 
@@ -102,10 +105,12 @@ def import_operations(chemin_fichier: str, cle: int = CLE_CRYPTAGE) -> list:
     fichier = open(file=chemin_fichier, mode='r', encoding="utf-8")
     liste_ope = []
     ligne = fichier.readline()
+    ligne = decryptage(ligne)
     num_op = 0
     while ligne != '':
         if ligne[0] != 'O':
             ligne = fichier.readline()
+            ligne = decryptage(ligne)
         else:
             num_champ = 0
             champ = ''
@@ -126,6 +131,7 @@ def import_operations(chemin_fichier: str, cle: int = CLE_CRYPTAGE) -> list:
                 else:
                     champ += char
             ligne = fichier.readline()
+            ligne = decryptage(ligne)
             num_op += 1
     fichier.close()
     return liste_ope
@@ -148,10 +154,12 @@ def import_budgets(chemin_fichier: str, cle: int = CLE_CRYPTAGE) -> list:
     fichier = open(file=chemin_fichier, mode='r', encoding="utf-8")
     liste_bud = []
     ligne = fichier.readline()
+    ligne = decryptage(ligne)
     num_bud = 0
     while ligne != '':
         if ligne[0] != 'B':
             ligne = fichier.readline()
+            ligne = decryptage(ligne)
         else:
             num_champ = 0
             champ = ''
@@ -170,12 +178,13 @@ def import_budgets(chemin_fichier: str, cle: int = CLE_CRYPTAGE) -> list:
                 else:
                     champ += char
             ligne = fichier.readline()
+            ligne = decryptage(ligne)
             num_bud += 1
     fichier.close()
     return liste_bud
 
 
-def cryptage(chaine: str, cle: int) -> str:
+def cryptage(chaine: str, cle: int = CLE_CRYPTAGE) -> str:
     """
     Fonction, avec 2 options en paramètres, qui renvoie une chaîne de caractères cryptée
     avec la méthode César, selon la clé fournie.
@@ -189,14 +198,14 @@ def cryptage(chaine: str, cle: int) -> str:
     """
     crypte = ''
     for char in chaine:
-        if chaine != '\n' or chaine != '*':
-            crypte += chr(ord(char) + cle)
-        else:
+        if char == '\n' or char == '*':
             crypte += char
+        else:
+            crypte += chr(ord(char) + cle)
     return crypte
 
 
-def decryptage(chaine: str, cle: int) -> str:
+def decryptage(chaine: str, cle: int = CLE_CRYPTAGE) -> str:
     """
     Fonction, avec 2 options en paramètres, qui renvoie une chaîne de caractères décryptée
     avec la méthode César, selon la clé fournie.
@@ -210,10 +219,10 @@ def decryptage(chaine: str, cle: int) -> str:
     """
     decrypte = ''
     for char in chaine:
-        if chaine != '\n' or chaine != '*':
-            decrypte += chr(ord(char) - cle)
-        else:
+        if char == '\n' or char == '*':
             decrypte += char
+        else:
+            decrypte += chr(ord(char) - cle)
     return decrypte
 
 
@@ -259,15 +268,15 @@ def identification():
 
 
 test_ident = import_idents(chemin_fichier='C:/Users/MSI/PycharmProjects/gestionBudget/src/ident.txt')
-# print(test_ident)
+print(test_ident)
 
 test_cpt = import_comptes(chemin_fichier='C:/Users/MSI/PycharmProjects/gestionBudget/users/19283746.txt')
-# print(test_cpt)
+print(test_cpt)
 
 test_op = import_operations(chemin_fichier='C:/Users/MSI/PycharmProjects/gestionBudget/users/19283746.txt')
-# print(test_op)
+print(test_op)
 
 test_bud = import_budgets(chemin_fichier='C:/Users/MSI/PycharmProjects/gestionBudget/users/19283746.txt')
+print(test_bud)
 
-# print(test_bud)
-# print(login(db=test_ident.txt))
+print(login(db=test_ident))
