@@ -1,14 +1,35 @@
 # GestionBudget
 
 ## Description du projet
-GestionBudget est un projet universitaire visant à fournir un outil de gestion budgétaire. Il est destiné aux banques mais reste un projet académique. Actuellement, l'application fonctionne en ligne de commande (CLI), mais une interface graphique (GUI) est en cours de développement.
+GestionBudget est un projet universitaire de gestion de comptes bancaires et de budgets. L'application est développée en **Python** et utilise **Tkinter** pour la partie graphique (prévue en fin de projet). Ce projet académique a pour but d'offrir une interface permettant aux utilisateurs de gérer leurs comptes et budgets de manière intuitive.
 
 ## Objectif du projet
 Ce projet a été réalisé dans le cadre des cours de **M. Jérôme Delobelle** et **M. Bruno Bouzy** à l'**Université Paris Cité**.
 
+## Fonctionnalités principales
+### 1. Phase d’identification
+- L'utilisateur s'identifie avec un **numéro d'identifiant** (8 chiffres) et un **mot de passe** (6 chiffres).
+- Un **clavier virtuel** est utilisé pour la saisie du mot de passe, avec une disposition aléatoire des chiffres.
+- Les identifiants sont stockés dans un fichier sécurisé (`ident.txt`), chiffré avec le **chiffrement de César**.
+
+### 2. Gestion des comptes
+- Visualisation des comptes bancaires et de leur solde.
+- Ajout d'opérations bancaires (Carte Bancaire, Chèque, Virement).
+- Gestion des virements entre comptes.
+- Stockage des opérations dans des fichiers utilisateurs chiffrés.
+
+### 3. Gestion des budgets
+- Création et gestion de budgets mensuels.
+- Association des opérations bancaires à des budgets spécifiques.
+- Affichage des dépenses par budget sous forme de **tableau**.
+
+### 4. Autres fonctionnalités
+- Calculatrice intégrée.
+- Simulateur d’emprunt immobilier.
+
 ## Prérequis
 - **Python 3.12**
-- **Bibliothèques** : `tkinter` (pour la future interface graphique)
+- **Bibliothèques** : `tkinter` (pour une future interface graphique)
 
 ## Installation
 1. Installer [Python 3.12](https://www.python.org/downloads/).
@@ -30,14 +51,17 @@ Ce projet a été réalisé dans le cadre des cours de **M. Jérôme Delobelle**
  gestionBudget/
  |-- main.py          # Fichier principal du programme
  |-- README.md        # Documentation du projet
- |-- requirements.txt # Liste des dépendances (future version)
+ |-- requirements.txt # Liste des dépendances
  |-- src/             # Code source
-     |-- ...          # Autres fichiers et modules
+     |-- ident.txt    # Fichier d'identification (crypté)
+     |-- users/       # Dossiers contenant les comptes et budgets des utilisateurs (cryptés)
 ```
 
 ## Évolutions prévues
-- Ajout d'une interface graphique avec **Tkinter**.
-- Amélioration des fonctionnalités et de l'ergonomie.
+- Ajout progressif des fonctionnalités en mode CLI.
+- Finalisation de l'interface graphique avec **Tkinter** en fin de projet.
+- Amélioration de la sécurité du stockage des données.
+- Ajout de la visualisation graphique des budgets.
 - Documentation plus détaillée et exemples d'utilisation.
 
 ## Licence
@@ -45,4 +69,3 @@ Projet réalisé à des fins académiques. Toute utilisation externe doit être 
 
 ---
 📌 *Projet universitaire – Université Paris Cité*
-
