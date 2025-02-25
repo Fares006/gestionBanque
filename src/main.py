@@ -22,30 +22,28 @@ def import_idents(chemin_fichier: str, cle: int = CLE_CRYPTAGE) -> dict:
         le dictionnaire des identifiants (et informations associées dans une liste)
     """
     # Ouverture du fichier et initialisation des variables nécessaires
-    idents = open(file=chemin_fichier, mode='r', encoding="utf-8")
     dict_ident = dict()
-    ligne = idents.readline()
-    ligne = decryptage(ligne)
-    while ligne != '':
-        num_champ = 0   # Numéro des champs, 0: identifiant, 1: mdp, 2: username, 3: clé de cryptage
-        champ = ''
-        for char in ligne:
-            if char == '*' or char == '\n':
-                if num_champ == 0:
-                    identifiant = champ
-                    dict_ident[identifiant] = []
-                elif num_champ == 3:
-                    dict_ident[identifiant].append(int(champ))
-                else:
-                    dict_ident[identifiant].append(champ)
-                champ = ''
-                num_champ += 1
-            else:
-                champ += char
+    with open(file=chemin_fichier, mode='r', encoding="utf-8") as idents:
         ligne = idents.readline()
         ligne = decryptage(ligne)
-
-    idents.close()
+        while ligne != '':
+            num_champ = 0   # Numéro des champs, 0: identifiant, 1: mdp, 2: username, 3: clé de cryptage
+            champ = ''
+            for char in ligne:
+                if char == '*' or char == '\n':
+                    if num_champ == 0:
+                        identifiant = champ
+                        dict_ident[identifiant] = []
+                    elif num_champ == 3:
+                        dict_ident[identifiant].append(int(champ))
+                    else:
+                        dict_ident[identifiant].append(champ)
+                    champ = ''
+                    num_champ += 1
+                else:
+                    champ += char
+            ligne = idents.readline()
+            ligne = decryptage(ligne)
     return dict_ident
 
 
@@ -60,27 +58,26 @@ def import_comptes(chemin_fichier: str, cle: int = CLE_CRYPTAGE) -> list:
     Returns:
         la liste contenant les différents comptes de l'utilisateur
     """
-    fichier = open(file=chemin_fichier, mode='r', encoding="utf-8")
-    liste_comptes = []
-    ligne = fichier.readline()
-    ligne = decryptage(ligne)
-    while ligne != '':
-        if ligne[0] != 'C':
-            break   # On se permet un break ici, car les lignes de compte sont en premier.
-        else:
-            num_champ = 0
-            champ = ''
-            for char in ligne:
-                if char == '*' or char == '\n':
-                    if num_champ == 1:
-                        liste_comptes.append(champ)
-                    champ = ''
-                    num_champ += 1
-                else:
-                    champ += char
+    with open(file=chemin_fichier, mode='r', encoding="utf-8") as fichier:
+        liste_comptes = []
         ligne = fichier.readline()
         ligne = decryptage(ligne)
-    fichier.close()
+        while ligne != '':
+            if ligne[0] != 'C':
+                break   # On se permet un break ici, car les lignes de compte sont en premier.
+            else:
+                num_champ = 0
+                champ = ''
+                for char in ligne:
+                    if char == '*' or char == '\n':
+                        if num_champ == 1:
+                            liste_comptes.append(champ)
+                        champ = ''
+                        num_champ += 1
+                    else:
+                        champ += char
+            ligne = fichier.readline()
+            ligne = decryptage(ligne)
     return liste_comptes
 
 
@@ -102,38 +99,37 @@ def import_operations(chemin_fichier: str, cle: int = CLE_CRYPTAGE) -> list:
     Returns:
         la liste des tuples contenant les différentes informations concernant chaque opération
     """
-    fichier = open(file=chemin_fichier, mode='r', encoding="utf-8")
-    liste_ope = []
-    ligne = fichier.readline()
-    ligne = decryptage(ligne)
-    num_op = 0
-    while ligne != '':
-        if ligne[0] != 'O':
-            ligne = fichier.readline()
-            ligne = decryptage(ligne)
-        else:
-            num_champ = 0
-            champ = ''
-            for char in ligne:
-                if char == '*' or char == '\n':
-                    if num_champ == 4:
-                        liste_ope[num_op] += (float(champ),)
-                    elif num_champ == 6:
-                        liste_ope[num_op] += (bool(champ),)
-                    elif num_champ == 1:
-                        liste_ope.append((champ,))
-                    elif num_champ == 0:
-                        pass
+    with open(file=chemin_fichier, mode='r', encoding="utf-8") as fichier:
+        liste_ope = []
+        ligne = fichier.readline()
+        ligne = decryptage(ligne)
+        num_op = 0
+        while ligne != '':
+            if ligne[0] != 'O':
+                ligne = fichier.readline()
+                ligne = decryptage(ligne)
+            else:
+                num_champ = 0
+                champ = ''
+                for char in ligne:
+                    if char == '*' or char == '\n':
+                        if num_champ == 4:
+                            liste_ope[num_op] += (float(champ),)
+                        elif num_champ == 6:
+                            liste_ope[num_op] += (bool(champ),)
+                        elif num_champ == 1:
+                            liste_ope.append((champ,))
+                        elif num_champ == 0:
+                            pass
+                        else:
+                            liste_ope[num_op] += (champ,)
+                        champ = ''
+                        num_champ += 1
                     else:
-                        liste_ope[num_op] += (champ,)
-                    champ = ''
-                    num_champ += 1
-                else:
-                    champ += char
-            ligne = fichier.readline()
-            ligne = decryptage(ligne)
-            num_op += 1
-    fichier.close()
+                        champ += char
+                ligne = fichier.readline()
+                ligne = decryptage(ligne)
+                num_op += 1
     return liste_ope
 
 
@@ -151,36 +147,35 @@ def import_budgets(chemin_fichier: str, cle: int = CLE_CRYPTAGE) -> list:
     Returns:
         la liste des tuples contenant les différentes informations de chaque budget
     """
-    fichier = open(file=chemin_fichier, mode='r', encoding="utf-8")
-    liste_bud = []
-    ligne = fichier.readline()
-    ligne = decryptage(ligne)
-    num_bud = 0
-    while ligne != '':
-        if ligne[0] != 'B':
-            ligne = fichier.readline()
-            ligne = decryptage(ligne)
-        else:
-            num_champ = 0
-            champ = ''
-            for char in ligne:
-                if char == '*' or char == '\n':
-                    if num_champ == 2:
-                        liste_bud[num_bud].append(float(champ))
-                    elif num_champ == 1:
-                        liste_bud.append([champ])
-                    elif num_champ == 0:
-                        pass
+    with open(file=chemin_fichier, mode='r', encoding="utf-8") as fichier:
+        liste_bud = []
+        ligne = fichier.readline()
+        ligne = decryptage(ligne)
+        num_bud = 0
+        while ligne != '':
+            if ligne[0] != 'B':
+                ligne = fichier.readline()
+                ligne = decryptage(ligne)
+            else:
+                num_champ = 0
+                champ = ''
+                for char in ligne:
+                    if char == '*' or char == '\n':
+                        if num_champ == 2:
+                            liste_bud[num_bud].append(float(champ))
+                        elif num_champ == 1:
+                            liste_bud.append([champ])
+                        elif num_champ == 0:
+                            pass
+                        else:
+                            liste_bud[num_bud].append(champ)
+                        champ = ''
+                        num_champ += 1
                     else:
-                        liste_bud[num_bud].append(champ)
-                    champ = ''
-                    num_champ += 1
-                else:
-                    champ += char
-            ligne = fichier.readline()
-            ligne = decryptage(ligne)
-            num_bud += 1
-    fichier.close()
+                        champ += char
+                ligne = fichier.readline()
+                ligne = decryptage(ligne)
+                num_bud += 1
     return liste_bud
 
 
@@ -273,6 +268,7 @@ def identification():
         cpt = import_comptes(chemin_fichier=f'../../gestionBudget/users/{login_state[1]}.txt')
         op = import_operations(chemin_fichier=f'../../gestionBudget/users/{login_state[1]}.txt')
         bud = import_budgets(chemin_fichier=f'../../gestionBudget/users/{login_state[1]}.txt')
+        print(cpt, op, bud, sep='\n')
 
 
 # --Programme principal-- #
