@@ -47,6 +47,7 @@ Ce projet a été réalisé dans le cadre des cours de **M. Jérôme Delobelle**
    ```
 
 ## Structure du projet
+```
 gestionBudget/
  |-- main.py                   # Fichier principal du programme
  |-- README.md                 # Documentation du projet
@@ -66,7 +67,7 @@ gestionBudget/
          |-- 34567890.txt      # Fichier utilisateur
          |-- 56789012.txt      # Fichier utilisateur
          |-- 87654321.txt      # Fichier utilisateur
-
+```
 
 ## Évolutions prévues
 - Ajout progressif des fonctionnalités en mode CLI.
