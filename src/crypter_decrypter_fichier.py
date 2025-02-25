@@ -49,9 +49,21 @@ def decrypter_fichier(path: str) -> None:
 
 
 # --Programme principal-- #
-crypter_fichier(path='C:/Users/MSI/PycharmProjects/gestionBudget/src/ident.txt')
-crypter_fichier(path='C:/Users/MSI/PycharmProjects/gestionBudget/users/19283746.txt')
-crypter_fichier(path='C:/Users/MSI/PycharmProjects/gestionBudget/users/23456789.txt')
-crypter_fichier(path='C:/Users/MSI/PycharmProjects/gestionBudget/users/34567890.txt')
-crypter_fichier(path='C:/Users/MSI/PycharmProjects/gestionBudget/users/56789012.txt')
-crypter_fichier(path='C:/Users/MSI/PycharmProjects/gestionBudget/users/87654321.txt')
+
+#   Bloc de cryptage de tous les fichiers :
+
+#   crypter_fichier(path='C:/Users/MSI/PycharmProjects/gestionBudget/src/ident.txt')
+#   crypter_fichier(path='C:/Users/MSI/PycharmProjects/gestionBudget/users/19283746.txt')
+#   crypter_fichier(path='C:/Users/MSI/PycharmProjects/gestionBudget/users/23456789.txt')
+#   crypter_fichier(path='C:/Users/MSI/PycharmProjects/gestionBudget/users/34567890.txt')
+#   crypter_fichier(path='C:/Users/MSI/PycharmProjects/gestionBudget/users/56789012.txt')
+#   crypter_fichier(path='C:/Users/MSI/PycharmProjects/gestionBudget/users/87654321.txt')
+#   --------------------------------------------------------------------------------------  #
+#   Bloc de décryptage de tous les fichiers :
+
+#   decrypter_fichier(path='C:/Users/MSI/PycharmProjects/gestionBudget/src/ident.txt')
+#   decrypter_fichier(path='C:/Users/MSI/PycharmProjects/gestionBudget/users/19283746.txt')
+#   decrypter_fichier(path='C:/Users/MSI/PycharmProjects/gestionBudget/users/23456789.txt')
+#   decrypter_fichier(path='C:/Users/MSI/PycharmProjects/gestionBudget/users/34567890.txt')
+#   decrypter_fichier(path='C:/Users/MSI/PycharmProjects/gestionBudget/users/56789012.txt')
+#   decrypter_fichier(path='C:/Users/MSI/PycharmProjects/gestionBudget/users/87654321.txt')
