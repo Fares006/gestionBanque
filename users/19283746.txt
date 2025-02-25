@@ -1,8 +1,1 @@
-CPT*Compte Chèques
-CPT*PEL
-OPE*02/01/2024*Restaurant*Compte Chèques*30.50*CB*True*sorties
-OPE*08/01/2024*Abonnement Netflix*Compte Chèques*15.99*CB*False*divertissement
-OPE*15/01/2024*Épargne Mensuelle*Compte Chèques*200.00*VIR*True*épargne
-BUD*sorties*250.00*Compte Chèques
-BUD*divertissement*100.00*Compte Chèques
-BUD*épargne*500.00*PEL
+ZgkAZ|7Zÿ|!ZgkAg\c!fg\AGIFGHFIGIKAi|xxAZ|7Zÿ|AJGELGAZYAk|A|!fg\AGOFGHFIGIKAXy||7e|}AZ|7Zÿ|AHLEPPAZYA]x|A{|||!fg\AHLFGHFIGIKAàx~|7d|||AZ|7Zÿ|AIGGEGGAm`iAk|AĀx~|!Yl[A|AILGEGGAZ|7Zÿ|!Yl[A{|||AHGGEGGAZ|7Zÿ|!Yl[AĀx~|ALGGEGGAg\c!

@@ -1,8 +1,1 @@
-CPT*Compte Principal
-CPT*Livret Développement Durable
-OPE*04/01/2024*Courses*Compte Principal*75.40*CB*True*alimentation
-OPE*09/01/2024*Concert*Compte Principal*55.00*CB*False*loisirs
-OPE*14/01/2024*Épargne*Compte Principal*250.00*VIR*True*épargne
-BUD*alimentation*600.00*Compte Principal
-BUD*loisirs*150.00*Compte Principal
-BUD*épargne*350.00*Livret Développement Durable
+ZgkAZ|7gzx!ZgkAc|7[Ā|||7[xy|!fg\AGKFGHFIGIKAZ|AZ|7gzxANLEKGAZYAk|Ax|x!fg\AGPFGHFIGIKAZz|AZ|7gzxALLEGGAZYA]x|A!fg\AHKFGHFIGIKAàx~|AZ|7gzxAILGEGGAm`iAk|AĀx~|!Yl[Ax|xAMGGEGGAZ|7gzx!Yl[AAHLGEGGAZ|7gzx!Yl[AĀx~|AJLGEGGAc|7[Ā|||7[xy|!

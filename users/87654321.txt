@@ -1,8 +1,1 @@
-CPT*Compte Courant
-CPT*Compte Épargne
-OPE*03/01/2024*Essence*Compte Courant*60.00*CB*True*transport
-OPE*07/01/2024*Amazon Achat*Compte Courant*89.99*CB*False*shopping
-OPE*12/01/2024*Virement Épargne*Compte Courant*150.00*VIR*True*épargne
-BUD*transport*200.00*Compte Courant
-BUD*shopping*300.00*Compte Courant
-BUD*épargne*400.00*Compte Épargne
+ZgkAZ|7Zx!ZgkAZ|7àx~|!fg\AGJFGHFIGIKA\|z|AZ|7ZxAMGEGGAZYAk|Ax!fg\AGNFGHFIGIKAXx7XzxAZ|7ZxAOPEPPAZYA]x|A~!fg\AHIFGHFIGIKAm||7àx~|AZ|7ZxAHLGEGGAm`iAk|AĀx~|!Yl[AxAIGGEGGAZ|7Zx!Yl[A~AJGGEGGAZ|7Zx!Yl[AĀx~|AKGGEGGAZ|7àx~|!

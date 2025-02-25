@@ -1,8 +1,1 @@
-CPT*Compte Courant
-CPT*Livret A
-OPE*01/01/2024*Supermarché*Compte Courant*45.30*CB*True*alimentation
-OPE*05/01/2024*Cinéma*Compte Courant*12.00*CB*False*sorties
-OPE*10/01/2024*Virement Épargne*Compte Courant*100.00*VIR*True*épargne
-BUD*alimentation*500.00*Compte Courant
-BUD*sorties*200.00*Compte Courant
-BUD*épargne*300.00*Livret A
+ZgkAZ|7Zx!ZgkAc|7X!fg\AGHFGHFIGIKAj|xzĀAZ|7ZxAKLEJGAZYAk|Ax|x!fg\AGLFGHFIGIKAZĀxAZ|7ZxAHIEGGAZYA]x|A|!fg\AHGFGHFIGIKAm||7àx~|AZ|7ZxAHGGEGGAm`iAk|AĀx~|!Yl[Ax|xALGGEGGAZ|7Zx!Yl[A|AIGGEGGAZ|7Zx!Yl[AĀx~|AJGGEGGAc|7X!

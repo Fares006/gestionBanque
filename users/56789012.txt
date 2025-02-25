@@ -1,8 +1,1 @@
-CPT*Compte Perso
-CPT*Compte Épargne Retraite
-OPE*06/01/2024*Facture Internet*Compte Perso*29.99*CB*True*charges
-OPE*11/01/2024*Vêtements Soldes*Compte Perso*120.00*CB*False*shopping
-OPE*18/01/2024*Placement Épargne*Compte Perso*500.00*VIR*True*épargne
-BUD*charges*100.00*Compte Perso
-BUD*shopping*250.00*Compte Perso
-BUD*épargne*600.00*Compte Épargne Retraite
+ZgkAZ|7g|!ZgkAZ|7àx~|7i|x|!fg\AGMFGHFIGIKA]xz|7`||AZ|7g|AIPEPPAZYAk|Azx~|!fg\AHHFGHFIGIKAmā||7j{|AZ|7g|AHIGEGGAZYA]x|A~!fg\AHOFGHFIGIKAgxz||7àx~|AZ|7g|ALGGEGGAm`iAk|AĀx~|!Yl[Azx~|AHGGEGGAZ|7g|!Yl[A~AILGEGGAZ|7g|!Yl[AĀx~|AMGGEGGAZ|7àx~|7i|x|!

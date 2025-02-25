@@ -49,4 +49,10 @@ def decrypter_fichier(path: str) -> None:
 
 
 # --Programme principal-- #
+crypter_fichier(path='C:/Users/MSI/PycharmProjects/gestionBudget/src/ident.txt')
+crypter_fichier(path='C:/Users/MSI/PycharmProjects/gestionBudget/users/19283746.txt')
+crypter_fichier(path='C:/Users/MSI/PycharmProjects/gestionBudget/users/23456789.txt')
+crypter_fichier(path='C:/Users/MSI/PycharmProjects/gestionBudget/users/34567890.txt')
+crypter_fichier(path='C:/Users/MSI/PycharmProjects/gestionBudget/users/56789012.txt')
+crypter_fichier(path='C:/Users/MSI/PycharmProjects/gestionBudget/users/87654321.txt')
 
