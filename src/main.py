@@ -3,6 +3,7 @@
 #   |--Groupe 2 (MOUSSA, ASSEMAT, JIN, ZAMOURI)--|   #
 #   |--------------------------------------------|   #
 # --Imports-- #
+import datetime
 
 # --Constantes-- #
 CLE_CRYPTAGE = 23
@@ -27,21 +28,9 @@ def import_idents(chemin_fichier: str, cle: int = CLE_CRYPTAGE) -> dict:
         ligne = idents.readline()
         ligne = decryptage(ligne)
         while ligne != '':
-            num_champ = 0   # Numéro des champs, 0: identifiant, 1: mdp, 2: username, 3: clé de cryptage
-            champ = ''
-            for char in ligne:
-                if char == '*' or char == '\n':
-                    if num_champ == 0:
-                        identifiant = champ
-                        dict_ident[identifiant] = []
-                    elif num_champ == 3:
-                        dict_ident[identifiant].append(int(champ))
-                    else:
-                        dict_ident[identifiant].append(champ)
-                    champ = ''
-                    num_champ += 1
-                else:
-                    champ += char
+            liste_intm = ligne.split('*')
+            dict_ident[liste_intm[0]] = liste_intm[1:]
+            dict_ident[liste_intm[0]][-1] = int(dict_ident[liste_intm[0]][-1])
             ligne = idents.readline()
             ligne = decryptage(ligne)
     return dict_ident
@@ -62,20 +51,9 @@ def import_comptes(chemin_fichier: str, cle: int = CLE_CRYPTAGE) -> list:
         liste_comptes = []
         ligne = fichier.readline()
         ligne = decryptage(ligne)
-        while ligne != '':
-            if ligne[0] != 'C':
-                break   # On se permet un break ici, car les lignes de compte sont en premier.
-            else:
-                num_champ = 0
-                champ = ''
-                for char in ligne:
-                    if char == '*' or char == '\n':
-                        if num_champ == 1:
-                            liste_comptes.append(champ)
-                        champ = ''
-                        num_champ += 1
-                    else:
-                        champ += char
+        while ligne != '' and ligne[0] == 'C':
+            liste_intm = ligne.strip('\n').split('*')
+            liste_comptes.append(liste_intm[1])
             ligne = fichier.readline()
             ligne = decryptage(ligne)
     return liste_comptes
@@ -103,33 +81,18 @@ def import_operations(chemin_fichier: str, cle: int = CLE_CRYPTAGE) -> list:
         liste_ope = []
         ligne = fichier.readline()
         ligne = decryptage(ligne)
-        num_op = 0
         while ligne != '':
-            if ligne[0] != 'O':
-                ligne = fichier.readline()
-                ligne = decryptage(ligne)
-            else:
-                num_champ = 0
-                champ = ''
-                for char in ligne:
-                    if char == '*' or char == '\n':
-                        if num_champ == 4:
-                            liste_ope[num_op] += (float(champ),)
-                        elif num_champ == 6:
-                            liste_ope[num_op] += (bool(champ),)
-                        elif num_champ == 1:
-                            liste_ope.append((champ,))
-                        elif num_champ == 0:
-                            pass
-                        else:
-                            liste_ope[num_op] += (champ,)
-                        champ = ''
-                        num_champ += 1
-                    else:
-                        champ += char
-                ligne = fichier.readline()
-                ligne = decryptage(ligne)
-                num_op += 1
+            if ligne[0] == 'O':
+                liste_intm = ligne.strip('\n').split('*')
+                liste_intm.pop(0)
+                liste_intm[0] = datetime.date(year=int(liste_intm[0][6:]),
+                                             month=int(liste_intm[0][3:5]),
+                                             day=int(liste_intm[0][0:2]))
+                liste_intm[3] = float(liste_intm[3])
+                liste_intm[5] = bool(liste_intm[5])
+                liste_ope.append(tuple(liste_intm))
+            ligne = fichier.readline()
+            ligne = decryptage(ligne)
     return liste_ope
 
 
@@ -151,31 +114,14 @@ def import_budgets(chemin_fichier: str, cle: int = CLE_CRYPTAGE) -> list:
         liste_bud = []
         ligne = fichier.readline()
         ligne = decryptage(ligne)
-        num_bud = 0
         while ligne != '':
-            if ligne[0] != 'B':
-                ligne = fichier.readline()
-                ligne = decryptage(ligne)
-            else:
-                num_champ = 0
-                champ = ''
-                for char in ligne:
-                    if char == '*' or char == '\n':
-                        if num_champ == 2:
-                            liste_bud[num_bud].append(float(champ))
-                        elif num_champ == 1:
-                            liste_bud.append([champ])
-                        elif num_champ == 0:
-                            pass
-                        else:
-                            liste_bud[num_bud].append(champ)
-                        champ = ''
-                        num_champ += 1
-                    else:
-                        champ += char
-                ligne = fichier.readline()
-                ligne = decryptage(ligne)
-                num_bud += 1
+            if ligne[0] == 'B':
+                liste_intm = ligne.strip('\n').split('*')
+                liste_intm.pop(0)
+                liste_intm[1] = float(liste_intm[1])
+                liste_bud.append(liste_intm)
+            ligne = fichier.readline()
+            ligne = decryptage(ligne)
     return liste_bud
 
 
@@ -263,7 +209,7 @@ def calcul_solde(lst_op: list) -> float:
         lst_op: liste des opérations
 
     Returns:
-        le montant du compte
+        le montant présent sur le compte
     """
     solde = 0
     for i in range(len(lst_op)):
@@ -285,9 +231,12 @@ def identification():
         lst_op = import_operations(chemin_fichier=f'../users/{identifiant}.txt')
         lst_bud = import_budgets(chemin_fichier=f'../users/{identifiant}.txt')
         solde = calcul_solde(lst_op)
+        print(lst_bud)
+
         print(f"\n|-----Tableau de bord-----|\n"
               f"| Bonjour {dict_ident[identifiant][1]} |\n"
               f"| Vous avez {solde}€ sur votre compte |")
+
 
 
 # --Programme principal-- #
