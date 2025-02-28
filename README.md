@@ -49,7 +49,6 @@ Ce projet a été réalisé dans le cadre des cours de **M. Jérôme Delobelle**
 ## Structure du projet
 ```
 gestionBudget/
- |-- main.py                   # Fichier principal du programme
  |-- README.md                 # Documentation du projet
  |-- gestionBudget.iml         # Fichier de configuration du projet
  |-- misc.xml                  # Fichier de configuration supplémentaire
@@ -61,6 +60,8 @@ gestionBudget/
  |-- src/                      # Code source
      |-- crypter_decrypter_fichier.py  # Script pour crypter et décrypter des fichiers
      |-- ident.txt             # Fichier d'identification (crypté)
+     |-- ident_clair.txt       # Fichier d'identification (en clair)
+     |-- main.py               # Fichier principal du programme
  |-- users/                    # Dossiers contenant les comptes et budgets des utilisateurs (cryptés)
      |-- 19283746.txt          # Fichier utilisateur
      |-- 23456789.txt          # Fichier utilisateur
