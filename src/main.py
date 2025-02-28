@@ -231,13 +231,11 @@ def identification():
         lst_op = import_operations(chemin_fichier=f'../users/{identifiant}.txt')
         lst_bud = import_budgets(chemin_fichier=f'../users/{identifiant}.txt')
         solde = calcul_solde(lst_op)
-        print(lst_bud)
-
         print(f"\n|-----Tableau de bord-----|\n"
               f"| Bonjour {dict_ident[identifiant][1]} |\n"
               f"| Vous avez {solde}€ sur votre compte |")
 
 
-
-# --Programme principal-- #
-identification()
+# --Programme principal--
+if __name__ == "__main__":
+    identification()

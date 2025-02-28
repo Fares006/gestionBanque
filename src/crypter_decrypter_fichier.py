@@ -49,7 +49,6 @@ def decrypter_fichier(path: str) -> None:
 
 
 # --Programme principal-- #
-
 #   --------------------------------------------------------------------------------------  #
 #   Bloc de cryptage de tous les fichiers :
 
