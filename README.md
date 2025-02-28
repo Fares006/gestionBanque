@@ -57,16 +57,16 @@ gestionBudget/
  |-- vcs.xml                   # Fichier de configuration du contrôle de version
  |-- .gitignore                # Fichier pour ignorer des fichiers dans Git
  |-- idea/                     # Dossier de configuration d'IDEA
-     |-- inspectionProfiles/   # Profils d'inspection
+     |-- inspectionProfiles/   
  |-- src/                      # Code source
      |-- crypter_decrypter_fichier.py  # Script pour crypter et décrypter des fichiers
      |-- ident.txt             # Fichier d'identification (crypté)
-     |-- users/                # Dossiers contenant les comptes et budgets des utilisateurs (cryptés)
-         |-- 19283746.txt      # Fichier utilisateur
-         |-- 23456789.txt      # Fichier utilisateur
-         |-- 34567890.txt      # Fichier utilisateur
-         |-- 56789012.txt      # Fichier utilisateur
-         |-- 87654321.txt      # Fichier utilisateur
+ |-- users/                    # Dossiers contenant les comptes et budgets des utilisateurs (cryptés)
+     |-- 19283746.txt          # Fichier utilisateur
+     |-- 23456789.txt          # Fichier utilisateur
+     |-- 34567890.txt          # Fichier utilisateur
+     |-- 56789012.txt          # Fichier utilisateur
+     |-- 87654321.txt          # Fichier utilisateur
 ```
 
 ## Évolutions prévues
