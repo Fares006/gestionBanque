@@ -28,9 +28,6 @@ def import_idents(chemin_fichier: str, cle: int = CLE_CRYPTAGE) -> dict:
         ligne = idents.readline()
         ligne = decryptage(ligne)
         while ligne != '':
-            liste_intm = ligne.split('*')
-            dict_ident[liste_intm[0]] = liste_intm[1:]
-            dict_ident[liste_intm[0]][-1] = int(dict_ident[liste_intm[0]][-1])
             liste_intermediaire = ligne.split('*')
             dict_ident[liste_intermediaire[0]] = liste_intermediaire[1:]
             dict_ident[liste_intermediaire[0]][-1] = int(dict_ident[liste_intermediaire[0]][-1])
@@ -55,8 +52,6 @@ def import_comptes(chemin_fichier: str, cle: int = CLE_CRYPTAGE) -> list:
         ligne = fichier.readline()
         ligne = decryptage(ligne)
         while ligne != '' and ligne[0] == 'C':
-            liste_intm = ligne.strip('\n').split('*')
-            liste_comptes.append(liste_intm[1])
             liste_intermediaire = ligne.strip('\n').split('*')
             liste_comptes.append(liste_intermediaire[1])
             ligne = fichier.readline()
@@ -88,14 +83,6 @@ def import_operations(chemin_fichier: str, cle: int = CLE_CRYPTAGE) -> list:
         ligne = decryptage(ligne)
         while ligne != '':
             if ligne[0] == 'O':
-                liste_intm = ligne.strip('\n').split('*')
-                liste_intm.pop(0)
-                liste_intm[0] = datetime.date(year=int(liste_intm[0][6:]),
-                                             month=int(liste_intm[0][3:5]),
-                                             day=int(liste_intm[0][0:2]))
-                liste_intm[3] = float(liste_intm[3])
-                liste_intm[5] = bool(liste_intm[5])
-                liste_ope.append(tuple(liste_intm))
                 liste_intermediaire = ligne.strip('\n').split('*')
                 liste_intermediaire.pop(0)
                 liste_intermediaire[0] = datetime.date(year=int(liste_intermediaire[0][6:]),
@@ -129,10 +116,6 @@ def import_budgets(chemin_fichier: str, cle: int = CLE_CRYPTAGE) -> list:
         ligne = decryptage(ligne)
         while ligne != '':
             if ligne[0] == 'B':
-                liste_intm = ligne.strip('\n').split('*')
-                liste_intm.pop(0)
-                liste_intm[1] = float(liste_intm[1])
-                liste_bud.append(liste_intm)
                 liste_intermediaire = ligne.strip('\n').split('*')
                 liste_intermediaire.pop(0)
                 liste_intermediaire[1] = float(liste_intermediaire[1])
