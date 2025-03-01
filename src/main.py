@@ -62,7 +62,7 @@ def import_comptes(chemin_fichier: str, cle: int) -> list:
 def import_operations(chemin_fichier: str, cle: int) -> list:
     """
     Importe le contenu relatif aux opérations du fichier id.txt et renvoie une liste de tuples qui contient :
-      - Une date (str),
+      - Une date (datetime.date),
       - Un libellé de l'opération (str),
       - Le compte concerné (str),
       - Le montant de l'opération (float),
@@ -166,6 +166,17 @@ def decryptage(chaine: str, cle: int) -> str:
             decrypte += chr(ord(char) - cle)
     return decrypte
 
+
+def get_identifiant(dictionnaire_id: dict) -> str:
+    """
+    Permet à l'utilisateur de saisir son identifiant
+
+    Args:
+        dictionnaire_id: Le fichier ident.txt qui joue le role de base de données
+
+    Returns:
+
+    """
 
 def login(dictionnaire_id: dict) -> tuple[bool, str]:
     """
