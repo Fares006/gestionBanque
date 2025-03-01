@@ -4,6 +4,9 @@
 #   |--------------------------------------------|   #
 # --Imports-- #
 import datetime
+import tkinter as tk
+from tkinter import messagebox
+
 
 # --Constantes-- #
 CLE_CRYPTAGE = 23
@@ -23,17 +26,17 @@ def import_idents(chemin_fichier: str, cle: int = CLE_CRYPTAGE) -> dict:
         le dictionnaire des identifiants (et informations associées dans une liste)
     """
     # Ouverture du fichier et initialisation des variables nécessaires
-    dict_ident = dict()
+    dic_ident = dict()
     with open(file=chemin_fichier, mode='r', encoding="utf-8") as idents:
         ligne = idents.readline()
         ligne = decryptage(ligne, cle=cle)
         while ligne != '':
             liste_intermediaire = ligne.split('*')
-            dict_ident[liste_intermediaire[0]] = liste_intermediaire[1:]
-            dict_ident[liste_intermediaire[0]][-1] = int(dict_ident[liste_intermediaire[0]][-1])
+            dic_ident[liste_intermediaire[0]] = liste_intermediaire[1:]
+            dic_ident[liste_intermediaire[0]][-1] = int(dic_ident[liste_intermediaire[0]][-1])
             ligne = idents.readline()
             ligne = decryptage(ligne, cle=cle)
-    return dict_ident
+    return dic_ident
 
 
 def import_comptes(chemin_fichier: str, cle: int) -> list:
@@ -167,53 +170,66 @@ def decryptage(chaine: str, cle: int) -> str:
     return decrypte
 
 
-def get_identifiant(dictionnaire_id: dict) -> str:
+def get_identifiant() -> str:
     """
     Permet à l'utilisateur de saisir son identifiant
 
-    Args:
-        dictionnaire_id: Le fichier ident.txt qui joue le role de base de données
-
     Returns:
-
+        renvoie l'identifiant de l'utilisateur validé
     """
-
-def login(dictionnaire_id: dict) -> tuple[bool, str]:
-    """
-    Permet à l'utilisateur de saisir ses identifiants de connexion et renvoie un tuple booléen-identifiant.
-
-    Args:
-        dictionnaire_id: Le fichier ident.txt qui joue le role de base de données
-
-    Returns:
-        un tuple avec True si l'identifiant et le mot de passe sont corrects ainsi que l'identifiant, False sinon.
-    """
-    connecte = False
-    identifiant = ''
     identifiant_trouve = False
     nb_essais = 0
     while nb_essais < 5 and not identifiant_trouve:
         identifiant = input('Veuillez saisir votre identifiant : ')
         if len(identifiant) != 8:
             print('L\'identifiant doit faire 8 caractères.')
-        elif identifiant not in dictionnaire_id.keys():
+        elif identifiant not in dict_ident.keys():
             nb_essais += 1
             print(f"Identifiant introuvable. Vous avez {5 - nb_essais} essais restants.")
         else:
             identifiant_trouve = True
-            nb_essais = 0
+            return identifiant
+    return ''
 
-    while nb_essais < 5 and not connecte and identifiant_trouve:
+
+def get_mdp(identifiant: str) -> str:
+    """
+    Permet à l'utilisateur de saisir son mot de passe.
+
+    Args:
+        identifiant: l'id de l'utilisateur validé (acquis par la fonction get_identifiant())
+
+    Returns:
+        renvoie le mot de passe de l'utilisateur validé
+    """
+    connecte = False
+    nb_essais = 0
+    while nb_essais < 5 and not connecte:
         mdp = input('Veuillez saisir votre mot de passe : ')
         if len(mdp) != 6:
             print('Le mot de passe doit faire 6 caractères.')
-        elif mdp != dictionnaire_id[identifiant][0]:
+        elif mdp != dict_ident[identifiant][0]:
             nb_essais += 1
             print(f"Mot de passe incorrect. Vous avez {5 - nb_essais} essais restants.")
         else:
             connecte = True
+            return mdp
+    return ''
 
-    return connecte, identifiant
+
+def login() -> tuple:
+    """
+
+    Args:
+
+    Returns:
+    """
+    identifiant = get_identifiant()
+    if identifiant != '':
+        mdp = get_mdp(identifiant)
+        if mdp != '':
+            return True, identifiant
+    return False, identifiant
 
 
 def calcul_solde(lst_ope: list) -> float:
@@ -221,7 +237,7 @@ def calcul_solde(lst_ope: list) -> float:
     Calcule le solde d'un utilisateur grâce à la liste des opérations associées au compte.
 
     Args:
-        lst_op: liste des opérations
+        lst_ope: liste des opérations
 
     Returns:
         le montant présent sur le compte
@@ -239,8 +255,7 @@ def identification():
     Returns:
 
     """
-    dict_ident = import_idents(chemin_fichier='./ident.txt')
-    login_state = login(dictionnaire_id=dict_ident)
+    login_state = login()
     identifiant = login_state[1]
     if login_state[0]:
         lst_cpt = import_comptes(chemin_fichier=f'../users/{identifiant}.txt', cle=dict_ident[identifiant][-1])
@@ -255,4 +270,5 @@ def identification():
 
 # --Programme principal--
 if __name__ == "__main__":
+    dict_ident = import_idents(chemin_fichier='./ident.txt')
     identification()
