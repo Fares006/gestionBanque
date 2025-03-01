@@ -31,6 +31,9 @@ def import_idents(chemin_fichier: str, cle: int = CLE_CRYPTAGE) -> dict:
             liste_intm = ligne.split('*')
             dict_ident[liste_intm[0]] = liste_intm[1:]
             dict_ident[liste_intm[0]][-1] = int(dict_ident[liste_intm[0]][-1])
+            liste_intermediaire = ligne.split('*')
+            dict_ident[liste_intermediaire[0]] = liste_intermediaire[1:]
+            dict_ident[liste_intermediaire[0]][-1] = int(dict_ident[liste_intermediaire[0]][-1])
             ligne = idents.readline()
             ligne = decryptage(ligne)
     return dict_ident
@@ -54,6 +57,8 @@ def import_comptes(chemin_fichier: str, cle: int = CLE_CRYPTAGE) -> list:
         while ligne != '' and ligne[0] == 'C':
             liste_intm = ligne.strip('\n').split('*')
             liste_comptes.append(liste_intm[1])
+            liste_intermediaire = ligne.strip('\n').split('*')
+            liste_comptes.append(liste_intermediaire[1])
             ligne = fichier.readline()
             ligne = decryptage(ligne)
     return liste_comptes
@@ -91,6 +96,14 @@ def import_operations(chemin_fichier: str, cle: int = CLE_CRYPTAGE) -> list:
                 liste_intm[3] = float(liste_intm[3])
                 liste_intm[5] = bool(liste_intm[5])
                 liste_ope.append(tuple(liste_intm))
+                liste_intermediaire = ligne.strip('\n').split('*')
+                liste_intermediaire.pop(0)
+                liste_intermediaire[0] = datetime.date(year=int(liste_intermediaire[0][6:]),
+                                                       month=int(liste_intermediaire[0][3:5]),
+                                                       day=int(liste_intermediaire[0][0:2]))
+                liste_intermediaire[3] = float(liste_intermediaire[3])
+                liste_intermediaire[5] = bool(liste_intermediaire[5])
+                liste_ope.append(tuple(liste_intermediaire))
             ligne = fichier.readline()
             ligne = decryptage(ligne)
     return liste_ope
@@ -120,6 +133,10 @@ def import_budgets(chemin_fichier: str, cle: int = CLE_CRYPTAGE) -> list:
                 liste_intm.pop(0)
                 liste_intm[1] = float(liste_intm[1])
                 liste_bud.append(liste_intm)
+                liste_intermediaire = ligne.strip('\n').split('*')
+                liste_intermediaire.pop(0)
+                liste_intermediaire[1] = float(liste_intermediaire[1])
+                liste_bud.append(liste_intermediaire)
             ligne = fichier.readline()
             ligne = decryptage(ligne)
     return liste_bud
@@ -216,6 +233,7 @@ def calcul_solde(lst_op: list) -> float:
         solde += lst_op[i][3]
     return solde
 
+
 def identification():
     """
     Fonction qui gère le comportement du logiciel, en fonction des entrées de l'utilisateur.
@@ -228,9 +246,9 @@ def identification():
     identifiant = login_state[1]
     if login_state[0]:
         lst_cpt = import_comptes(chemin_fichier=f'../users/{identifiant}.txt')
-        lst_op = import_operations(chemin_fichier=f'../users/{identifiant}.txt')
+        lst_ope = import_operations(chemin_fichier=f'../users/{identifiant}.txt')
         lst_bud = import_budgets(chemin_fichier=f'../users/{identifiant}.txt')
-        solde = calcul_solde(lst_op)
+        solde = calcul_solde(lst_ope)
         print(f"\n|-----Tableau de bord-----|\n"
               f"| Bonjour {dict_ident[identifiant][1]} |\n"
               f"| Vous avez {solde}€ sur votre compte |")

@@ -2,6 +2,7 @@
 #   |--------Gestion de Budget (avec IHM)--------|   #
 #   |--Groupe 2 (MOUSSA, ASSEMAT, JIN, ZAMOURI)--|   #
 #   |--------------------------------------------|   #
+
 # --Imports-- #
 from src.main import cryptage, decryptage, CLE_CRYPTAGE
 # --Constantes-- #
@@ -46,6 +47,7 @@ def decrypter_fichier(path: str) -> None:
     fichier = open(file=path, mode='w', encoding='utf-8')
     fichier.write(resultat)
     fichier.close()
+
 
 # --Programme principal-- #
 if __name__ == 'main':
