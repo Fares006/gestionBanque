@@ -4,12 +4,12 @@
 #   |--------------------------------------------|   #
 
 # --Imports-- #
-from src.main import cryptage, decryptage, CLE_CRYPTAGE
+from src.main import import_idents, cryptage, decryptage, CLE_CRYPTAGE
 # --Constantes-- #
-
+dict_ident = import_idents(chemin_fichier='./ident.txt')
 
 # --Fonctions-- #
-def crypter_fichier(path: str) -> None:
+def crypter_fichier(path: str, cle: int) -> None:
     """
     Procédure qui modifie un fichier pour le crypter
 
@@ -21,7 +21,7 @@ def crypter_fichier(path: str) -> None:
     ligne = fichier.readline()
     while ligne != '':
         for char in ligne:
-            resultat += cryptage(chaine=char, cle=CLE_CRYPTAGE)
+            resultat += cryptage(chaine=char, cle=cle)
         ligne = fichier.readline()
     fichier.close()
     fichier = open(file=path, mode='w', encoding='utf-8')
@@ -29,7 +29,7 @@ def crypter_fichier(path: str) -> None:
     fichier.close()
 
 
-def decrypter_fichier(path: str) -> None:
+def decrypter_fichier(path: str, cle: int = 0) -> None:
     """
     Procédure qui modifie un fichier pour le décrypter
 
@@ -41,7 +41,7 @@ def decrypter_fichier(path: str) -> None:
     ligne = fichier.readline()
     while ligne != '':
         for char in ligne:
-            resultat += decryptage(chaine=char, cle=CLE_CRYPTAGE)
+            resultat += decryptage(chaine=char, cle=cle)
         ligne = fichier.readline()
     fichier.close()
     fichier = open(file=path, mode='w', encoding='utf-8')
@@ -50,22 +50,18 @@ def decrypter_fichier(path: str) -> None:
 
 
 # --Programme principal-- #
-if __name__ == 'main':
+if __name__ == '__main__':
+    liste_ident = []
+    for id in dict_ident.keys():
+        liste_ident.append(id)
 
     #   Bloc de cryptage de tous les fichiers :
-    # crypter_fichier(path='./ident.txt')
-    # crypter_fichier(path='../users/19283746.txt')
-    # crypter_fichier(path='../users/23456789.txt')
-    # crypter_fichier(path='../users/34567890.txt')
-    # crypter_fichier(path='../users/56789012.txt')
-    # crypter_fichier(path='../users/87654321.txt')
+    # crypter_fichier(path='./ident.txt', cle=CLE_CRYPTAGE)
+    # for id in liste_ident:
+    #     crypter_fichier(path=f'../users/{id}.txt', cle=dict_ident[id][-1])
 
     #   Bloc de décryptage de tous les fichiers :
-
-    # decrypter_fichier(path='./ident.txt')
-    # decrypter_fichier(path='../users/19283746.txt')
-    # decrypter_fichier(path='../users/23456789.txt')
-    # decrypter_fichier(path='../users/34567890.txt')
-    # decrypter_fichier(path='../users/56789012.txt')
-    # decrypter_fichier(path='../users/87654321.txt')
+    # decrypter_fichier(path='./ident.txt', cle=CLE_CRYPTAGE)
+    # for id in liste_ident:
+    #     decrypter_fichier(path=f'../users/{id}.txt', cle=dict_ident[id][-1])
     pass

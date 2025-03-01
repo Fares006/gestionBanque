@@ -26,23 +26,23 @@ def import_idents(chemin_fichier: str, cle: int = CLE_CRYPTAGE) -> dict:
     dict_ident = dict()
     with open(file=chemin_fichier, mode='r', encoding="utf-8") as idents:
         ligne = idents.readline()
-        ligne = decryptage(ligne)
+        ligne = decryptage(ligne, cle=cle)
         while ligne != '':
             liste_intermediaire = ligne.split('*')
             dict_ident[liste_intermediaire[0]] = liste_intermediaire[1:]
             dict_ident[liste_intermediaire[0]][-1] = int(dict_ident[liste_intermediaire[0]][-1])
             ligne = idents.readline()
-            ligne = decryptage(ligne)
+            ligne = decryptage(ligne, cle=cle)
     return dict_ident
 
 
-def import_comptes(chemin_fichier: str, cle: int = CLE_CRYPTAGE) -> list:
+def import_comptes(chemin_fichier: str, cle: int) -> list:
     """
     Importe le contenu relatif aux comptes du fichier id.txt et renvoie la liste des comptes.
 
     Args:
         chemin_fichier: le chemin relatif du fichier id.txt
-        cle: clé de cryptage du fichier (en dur)
+        cle: clé de cryptage du fichier
 
     Returns:
         la liste contenant les différents comptes de l'utilisateur
@@ -50,16 +50,16 @@ def import_comptes(chemin_fichier: str, cle: int = CLE_CRYPTAGE) -> list:
     with open(file=chemin_fichier, mode='r', encoding="utf-8") as fichier:
         liste_comptes = []
         ligne = fichier.readline()
-        ligne = decryptage(ligne)
-        while ligne != '' and ligne[0] == 'C':
+        ligne = decryptage(ligne, cle)
+        while ligne != '' and ligne[:3] == 'CPT':
             liste_intermediaire = ligne.strip('\n').split('*')
             liste_comptes.append(liste_intermediaire[1])
             ligne = fichier.readline()
-            ligne = decryptage(ligne)
+            ligne = decryptage(ligne, cle)
     return liste_comptes
 
 
-def import_operations(chemin_fichier: str, cle: int = CLE_CRYPTAGE) -> list:
+def import_operations(chemin_fichier: str, cle: int) -> list:
     """
     Importe le contenu relatif aux opérations du fichier id.txt et renvoie une liste de tuples qui contient :
       - Une date (str),
@@ -72,7 +72,7 @@ def import_operations(chemin_fichier: str, cle: int = CLE_CRYPTAGE) -> list:
 
     Args:
         chemin_fichier: le chemin relatif du fichier id.txt
-        cle: clé de cryptage du fichier (en dur)
+        cle: clé de cryptage du fichier
 
     Returns:
         la liste des tuples contenant les différentes informations concernant chaque opération
@@ -80,9 +80,9 @@ def import_operations(chemin_fichier: str, cle: int = CLE_CRYPTAGE) -> list:
     with open(file=chemin_fichier, mode='r', encoding="utf-8") as fichier:
         liste_ope = []
         ligne = fichier.readline()
-        ligne = decryptage(ligne)
+        ligne = decryptage(ligne, cle)
         while ligne != '':
-            if ligne[0] == 'O':
+            if ligne[:3] == 'OPE':
                 liste_intermediaire = ligne.strip('\n').split('*')
                 liste_intermediaire.pop(0)
                 liste_intermediaire[0] = datetime.date(year=int(liste_intermediaire[0][6:]),
@@ -92,11 +92,11 @@ def import_operations(chemin_fichier: str, cle: int = CLE_CRYPTAGE) -> list:
                 liste_intermediaire[5] = bool(liste_intermediaire[5])
                 liste_ope.append(tuple(liste_intermediaire))
             ligne = fichier.readline()
-            ligne = decryptage(ligne)
+            ligne = decryptage(ligne, cle)
     return liste_ope
 
 
-def import_budgets(chemin_fichier: str, cle: int = CLE_CRYPTAGE) -> list:
+def import_budgets(chemin_fichier: str, cle: int) -> list:
     """
     Importe le contenu relatif aux budgets du fichier id.txt et renvoie une liste de listes qui contient :
       - La catégorie de dépenses (str),
@@ -105,7 +105,7 @@ def import_budgets(chemin_fichier: str, cle: int = CLE_CRYPTAGE) -> list:
 
     Args:
         chemin_fichier: le chemin relatif du fichier id.txt
-        cle: clé de cryptage du fichier (en dur)
+        cle: clé de cryptage du fichier
 
     Returns:
         la liste des tuples contenant les différentes informations de chaque budget
@@ -113,19 +113,19 @@ def import_budgets(chemin_fichier: str, cle: int = CLE_CRYPTAGE) -> list:
     with open(file=chemin_fichier, mode='r', encoding="utf-8") as fichier:
         liste_bud = []
         ligne = fichier.readline()
-        ligne = decryptage(ligne)
+        ligne = decryptage(ligne, cle)
         while ligne != '':
-            if ligne[0] == 'B':
+            if ligne[:3] == 'BUD':
                 liste_intermediaire = ligne.strip('\n').split('*')
                 liste_intermediaire.pop(0)
                 liste_intermediaire[1] = float(liste_intermediaire[1])
                 liste_bud.append(liste_intermediaire)
             ligne = fichier.readline()
-            ligne = decryptage(ligne)
+            ligne = decryptage(ligne, cle)
     return liste_bud
 
 
-def cryptage(chaine: str, cle: int = CLE_CRYPTAGE) -> str:
+def cryptage(chaine: str, cle: int) -> str:
     """
     Fonction, avec 2 options en paramètres, qui renvoie une chaîne de caractères cryptée
     avec la méthode César, selon la clé fournie.
@@ -146,7 +146,7 @@ def cryptage(chaine: str, cle: int = CLE_CRYPTAGE) -> str:
     return crypte
 
 
-def decryptage(chaine: str, cle: int = CLE_CRYPTAGE) -> str:
+def decryptage(chaine: str, cle: int) -> str:
     """
     Fonction, avec 2 options en paramètres, qui renvoie une chaîne de caractères décryptée
     avec la méthode César, selon la clé fournie.
@@ -167,7 +167,7 @@ def decryptage(chaine: str, cle: int = CLE_CRYPTAGE) -> str:
     return decrypte
 
 
-def login(dictionnaire_id: dict) -> tuple[bool, str] | bool:
+def login(dictionnaire_id: dict) -> tuple[bool, str]:
     """
     Permet à l'utilisateur de saisir ses identifiants de connexion et renvoie un tuple booléen-identifiant.
 
@@ -177,18 +177,22 @@ def login(dictionnaire_id: dict) -> tuple[bool, str] | bool:
     Returns:
         un tuple avec True si l'identifiant et le mot de passe sont corrects ainsi que l'identifiant, False sinon.
     """
+    connecte = False
+    identifiant = ''
+    identifiant_trouve = False
     nb_essais = 0
-    trouve = False
-    while not trouve:
+    while nb_essais < 5 and not identifiant_trouve:
         identifiant = input('Veuillez saisir votre identifiant : ')
         if len(identifiant) != 8:
             print('L\'identifiant doit faire 8 caractères.')
         elif identifiant not in dictionnaire_id.keys():
-            print('Identifiant introuvable.')
+            nb_essais += 1
+            print(f"Identifiant introuvable. Vous avez {5 - nb_essais} essais restants.")
         else:
-            trouve = True
+            identifiant_trouve = True
+            nb_essais = 0
 
-    while nb_essais < 5:
+    while nb_essais < 5 and not connecte and identifiant_trouve:
         mdp = input('Veuillez saisir votre mot de passe : ')
         if len(mdp) != 6:
             print('Le mot de passe doit faire 6 caractères.')
@@ -196,12 +200,12 @@ def login(dictionnaire_id: dict) -> tuple[bool, str] | bool:
             nb_essais += 1
             print(f"Mot de passe incorrect. Vous avez {5 - nb_essais} essais restants.")
         else:
-            return True, identifiant
+            connecte = True
 
-    return False
+    return connecte, identifiant
 
 
-def calcul_solde(lst_op: list) -> float:
+def calcul_solde(lst_ope: list) -> float:
     """
     Calcule le solde d'un utilisateur grâce à la liste des opérations associées au compte.
 
@@ -212,8 +216,8 @@ def calcul_solde(lst_op: list) -> float:
         le montant présent sur le compte
     """
     solde = 0
-    for i in range(len(lst_op)):
-        solde += lst_op[i][3]
+    for i in range(len(lst_ope)):
+        solde += lst_ope[i][3]
     return solde
 
 
@@ -228,9 +232,10 @@ def identification():
     login_state = login(dictionnaire_id=dict_ident)
     identifiant = login_state[1]
     if login_state[0]:
-        lst_cpt = import_comptes(chemin_fichier=f'../users/{identifiant}.txt')
-        lst_ope = import_operations(chemin_fichier=f'../users/{identifiant}.txt')
-        lst_bud = import_budgets(chemin_fichier=f'../users/{identifiant}.txt')
+        lst_cpt = import_comptes(chemin_fichier=f'../users/{identifiant}.txt', cle=dict_ident[identifiant][-1])
+        lst_ope = import_operations(chemin_fichier=f'../users/{identifiant}.txt', cle=dict_ident[identifiant][-1])
+        lst_bud = import_budgets(chemin_fichier=f'../users/{identifiant}.txt', cle=dict_ident[identifiant][-1])
+        print(lst_cpt, lst_ope, lst_bud, sep='\n')
         solde = calcul_solde(lst_ope)
         print(f"\n|-----Tableau de bord-----|\n"
               f"| Bonjour {dict_ident[identifiant][1]} |\n"
