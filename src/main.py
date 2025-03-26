@@ -232,7 +232,7 @@ def login() -> tuple:
     return False, identifiant
 
 
-def calcul_solde(lst_ope: list) -> float:
+def calcul_solde(lst_cpt: list, lst_ope: list) -> float:
     """
     Calcule le solde d'un utilisateur grâce à la liste des opérations associées au compte.
 
@@ -242,10 +242,74 @@ def calcul_solde(lst_ope: list) -> float:
     Returns:
         le montant présent sur le compte
     """
+    print("Faites le choix du compte : ")
+    for i in range(len(lst_cpt)):
+        print(f'{i+1}. {lst_cpt[i]}')
+    choix = int(input("Choisissez le compte pour calculer son solde : ")) - 1   # On enlève le 1 de l'affichage
+    while choix not in range(len(lst_cpt)):
+        choix = int(input("Choisissez le compte pour calculer son solde : ")) - 1   # On enlève le 1 de l'affichage
+
+    compte_choisi = lst_cpt[choix]
     solde = 0
     for i in range(len(lst_ope)):
-        solde += lst_ope[i][3]
+        if lst_ope[i][2] == compte_choisi:
+            solde += lst_ope[i][3]
     return solde
+
+
+def ajout_compte(lst_cpt: list) -> None:
+    """
+    Ajoute un compte de type livret d'épargne, etc. à la liste des comptes de l'utilisateur prise en paramètre.
+
+    Args:
+        lst_cpt: liste des comptes de l'utilisateur.
+
+    Returns:
+        None
+    """
+    nom = input("Nom du nouveau compte désiré : ")
+    lst_cpt.append(nom)
+
+
+def ajout_operation(lst_ope: list, lst_cpt: list, lst_bud: list) -> None:
+    """
+    Ajoute une opération (tuple) à la liste des opérations de l'utilisateur, prise en paramètre.
+
+    Args:
+        lst_ope: liste des opérations associées au compte.
+
+    Returns:
+        None
+    """
+    date_op = input("Date de l'opération (jj/mm/aaaa): ")
+    while type(date_op) is not datetime.date:
+        try:
+            date_op = datetime.date(year=int(date_op[6:]),
+                                    month=int(date_op[3:5]),
+                                    day=int(date_op[0:2]))
+        except TypeError:
+            date_op = input("Date de l'opération (jj/mm/aaaa): ")
+    libelle = input("Libellé : ")
+    compte = input("Compte concerné : ")
+    while compte not in lst_cpt:
+        print("Compte introuvable.")
+        compte = input("Compte concerné : ")
+    montant = float(input("Montant (positif / négatif) : "))
+    mode_paiement = input("Mode de paiement : ")
+    etat = input("L'opération est elle passée ? (O/N) : ").capitalize()
+    while etat not in ['O', 'N']:
+        etat = input("L'opération est elle passée ? (O/N) : ").capitalize()
+    match etat:
+        case 'O':
+            etat = True
+        case 'N':
+            etat = False
+    budget = input("Budget : ")
+    nom_budget = [lst_bud[i][0] for i in range(len(lst_bud))]
+    while budget not in nom_budget:
+        budget = input("Budget : ")
+    operation = date_op, libelle, compte, montant, mode_paiement, etat, budget
+    lst_ope.append(operation)
 
 
 def identification():
@@ -261,11 +325,37 @@ def identification():
         lst_cpt = import_comptes(chemin_fichier=f'../users/{identifiant}.txt', cle=dict_ident[identifiant][-1])
         lst_ope = import_operations(chemin_fichier=f'../users/{identifiant}.txt', cle=dict_ident[identifiant][-1])
         lst_bud = import_budgets(chemin_fichier=f'../users/{identifiant}.txt', cle=dict_ident[identifiant][-1])
-        print(lst_cpt, lst_ope, lst_bud, sep='\n')
-        solde = calcul_solde(lst_ope)
-        print(f"\n|-----Tableau de bord-----|\n"
-              f"| Bonjour {dict_ident[identifiant][1]} |\n"
-              f"| Vous avez {solde}€ sur votre compte |")
+        print(lst_ope, lst_bud)
+        print("\nBienvenue. De quelle fonctionnalité avez-vous besoin ?")
+        print("0. Quitter")
+        print("1. Afficher le solde du compte")
+        print("2. Ajouter un compte")
+        print("3. Ajouter une opération")
+        print("4. Effectuer un virement")
+        print("5. Afficher les opérations d'un compte")
+        choix = int(input("Votre choix : "))
+        while choix != 0:
+            match choix:
+                case 1:
+                    solde = calcul_solde(lst_ope)
+                    print(f"\n|-----Tableau de bord-----|\n"
+                          f"| Bonjour {dict_ident[identifiant][1]} |\n"
+                          f"| Vous avez {solde}€ sur votre compte |")
+                case 2:
+                    print("|-----Ajout de compte-----|")
+                    ajout_compte()
+                    print(f"Compte {lst_cpt[-1]} ajouté avec succès.")
+                case 3:
+                    print("|-----Ajout d'opération-----|")
+                    ajout_operation()
+                    print(f"Opération : \n{lst_ope[-1]}\n ajoutée avec succès.")
+                case 4:
+                    pass
+                case 5:
+                    for elt in lst_ope:
+                        print(elt)
+
+
 
 
 # --Programme principal--
