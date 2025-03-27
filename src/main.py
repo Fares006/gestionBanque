@@ -513,7 +513,7 @@ def enregistrement_modif(lst_cpt: list, lst_ope: list, lst_bud: list, identifian
         fichier.write(contenu_fichier)
 
 
-def identification():
+def identification() -> None:
     """
     Fonction qui gère le comportement du logiciel, en fonction des entrées de l'utilisateur.
 
@@ -543,9 +543,11 @@ def identification():
               "2. Ajouter un compte\n"
               "3. Ajouter une opération\n"
               "4. Ajouter un budget\n"
-              "5. Effectuer un virement\n"
-              "6. Afficher les opérations d'un compte\n"
-              "7. Déconnexion\n")
+              "5. Modifier un budget\n"
+              "6. Afficher différence dépenses/budget\n"
+              "7. Effectuer un virement\n"
+              "8. Afficher les opérations d'un compte\n"
+              "9. Déconnexion\n")
 
         choix = int(input("Votre choix : "))
 
@@ -579,11 +581,17 @@ def identification():
                     print("|-----Ajout d'un budget-----|")
                     budget = creation_budget(lst_cpt, lst_bud)
                     ajout_budget(lst_bud, budget)
-                case 5:  # Effectuer un virement entre comptes
+                case 5:  # Modifier un budget
+                    print("|-----Modification d'un budget-----|")
+                    pass
+                case 6:
+                    print("|-----Dépenses / budget-----|")
+                    pass
+                case 7:  # Effectuer un virement entre comptes
                     print("|-----Virement compte A -> compte B-----|")
                     nouveau_virement = creer_virement(lst_cpt, dict_soldes)
                     ajout_virement(nouveau_virement, lst_ope, dict_soldes)
-                case 6:  # Afficher les opérations d'un compte
+                case 8:  # Afficher les opérations d'un compte
                     print("|-----Affichage des opérations d'un compte-----|")
                     compte = selection_compte(lst_cpt, courant=False)
                     for operation in lst_ope:
@@ -595,7 +603,7 @@ def identification():
                                   f"Mode de paiement : {operation[4]} - "
                                   f"Etat : {operation[5]} - "
                                   f"Budget : {operation[6]} |")
-                case 7:  # Déconnexion
+                case 9:  # Déconnexion
                     return identification()
             enregistrement_modif(lst_cpt, lst_ope, lst_bud, identifiant, cle_cryptage)
             choix = int(input("Quelle fonctionnalité souhaitez-vous accéder ? : "))
