@@ -63,13 +63,13 @@ def import_comptes(chemin_fichier: str, cle: int) -> list:
 def import_operations(chemin_fichier: str, cle: int) -> list:
     """
     Importe le contenu relatif aux opérations du fichier id.txt et renvoie une liste de tuples qui contient :
-      - Une date (datetime.date) (premier élément, lst_ope[0]),
-      - Un libellé de l'opération (str) (deuxième élément, lst_ope[1]),
-      - Le compte concerné (str) (troisième élément, lst_ope[2]),
-      - Le montant de l'opération (float) (quatrième élément, lst_ope[3]),
-      - Le mode de paiement (str) (cinquième élément, lst_ope[4]),
-      - Un booléen indiquant si l'opération est effective (bool) (sixième élément, lst_ope[5]),
-      - Le budget concerné (str) (septième élément, lst_ope[6]).
+      - Une date (datetime.date) (premier élément, lst_ope[i][0]),
+      - Un libellé de l'opération (str) (deuxième élément, lst_ope[i][1]),
+      - Le compte concerné (str) (troisième élément, lst_ope[i][2]),
+      - Le montant de l'opération (float) (quatrième élément, lst_ope[i][3]),
+      - Le mode de paiement (str) (cinquième élément, lst_ope[i][4]),
+      - Un booléen indiquant si l'opération est effective (bool) (sixième élément, lst_ope[i][5]),
+      - Le budget concerné (str) (septième élément, lst_ope[i][6]).
 
     Args:
         chemin_fichier (str): le chemin relatif du fichier id.txt
@@ -258,7 +258,7 @@ def selection_compte(lst_cpt: list, courant: bool = True) -> str:
     return compte_choisi
 
 
-def selection_budget(lst_bud: list) -> str:
+def selection_budget(lst_bud: list) -> list:
     """
     Interface qui permet de sélectionner un budget parmis ceux qui sont présents sur
     le compte bancaire d'un utilisateur, pour diverses utilisations.
@@ -267,16 +267,15 @@ def selection_budget(lst_bud: list) -> str:
         lst_bud (list): contient la liste des budgets
 
     Returns:
-        str: le nom du budget
+        list: la list qui représente le budget
     """
     print("Faites le choix du budget : ")
-    nom_budget = [budget[0] for budget in lst_bud]
-    for i in range(len(nom_budget)):
-        print(f'{i + 1}. {nom_budget[i]}')
+    for i in range(len(lst_bud)):
+        print(f'{i + 1}. {lst_bud[i][0]}')
     choix = int(input("Choisissez le budget: ")) - 1  # On enlève le 1 ajouté à l'affichage
-    while choix not in range(len(nom_budget)):
+    while choix not in range(len(lst_bud)):
         choix = int(input("Choisissez le budget : ")) - 1  # On enlève le 1 ajouté à l'affichage
-    budget = nom_budget[choix]
+    budget = lst_bud[choix]
     return budget
 
 
@@ -329,27 +328,27 @@ def creation_operation(lst_cpt: list, lst_bud: list) -> tuple:
     Returns:
         tuple: l'opération sous forme de tuple
     """
-    date_op = input("Date de l'opération (jj/mm/aaaa): ")
-    while type(date_op) is not datetime.date:
+    date_valide = False
+    while not date_valide:
+        saisie = input("Date de l'opération (jj/mm/aaaa): ")
         try:
-            date_op = datetime.date(year=int(date_op[6:]),
-                                    month=int(date_op[3:5]),
-                                    day=int(date_op[:2]))
+            date_op = datetime.datetime.strptime(saisie, "%d/%m/%Y").date()
+            date_valide = True
         except ValueError:
-            date_op = input("Date de l'opération (jj/mm/aaaa): ")
+            print("Format invalide. Veuillez entrer une date au format jj/mm/aaaa.")
     libelle = input("Libellé de l'opération : ")
     compte = selection_compte(lst_cpt, courant=False)
     montant = float(input("Montant (positif / négatif) : "))
     mode_paiement = input("Mode de paiement : ")
-    etat = input("L'opération est elle passée ? (O/N) : ").capitalize()
+    etat = input("L'opération est elle passée ? (O/N) : ").upper()
     while etat not in ['O', 'N']:
-        etat = input("L'opération est elle passée ? (O/N) : ").capitalize()
+        etat = input("L'opération est elle passée ? (O/N) : ").upper()
     match etat:
         case 'O':
             etat = True
         case 'N':
             etat = False
-    budget = selection_budget(lst_bud)
+    budget = selection_budget(lst_bud)[0]       # On choisit seulement le nom / libellé du budget ici
     operation = date_op, libelle, compte, montant, mode_paiement, etat, budget
     return operation
 
@@ -385,7 +384,7 @@ def creation_budget(lst_cpt: list, lst_bud: list) -> list:
         print("Ce budget existe déjà.")
         libelle = input("Libellé du budget : ")
     seuil = float(input("Montant du budget : "))
-    while seuil < 0:
+    while seuil <= 0:
         seuil = float(input("Montant du budget : "))
     compte = selection_compte(lst_cpt, courant=False)
     return [libelle, seuil, compte]
@@ -424,7 +423,7 @@ def creer_virement(lst_cpt: list, dict_soldes: dict) -> tuple:
     while compte_emetteur == compte_benef:
         print("Le compte émetteur doit être différent du compte bénéficiaire.")
         compte_benef = selection_compte(lst_cpt, courant=False)
-    montant = float(input("Saisissez le montant du virement à effectuer : "))
+    montant = float(input(f"Saisissez le montant du virement à effectuer (solde : {calcul_solde(lst_cpt, compte=compte_emetteur)}) : "))
     while montant > dict_soldes[compte_emetteur]:
         print(f"Il n'y a pas assez de provisions sur ce compte pour effectuer ce virement. "
               f"({montant} > {dict_soldes[compte_emetteur]})")
@@ -513,6 +512,63 @@ def enregistrement_modif(lst_cpt: list, lst_ope: list, lst_bud: list, identifian
         fichier.write(contenu_fichier)
 
 
+def modifier_budget(lst_bud: list, lst_cpt: list) -> None:
+    """
+    Modifie un budget avec les informations souhaitées.
+
+    Args:
+        lst_bud (list):
+        lst_cpt (list):
+
+    Returns:
+
+    """
+    budget_modifie = selection_budget(lst_bud)
+    print("1. Libellé\n2. Montant\n3. Compte associé")
+
+    # Validation de l'entrée pour le choix
+    choix = None
+    while choix not in [1, 2, 3]:
+        saisie = input("Que souhaitez-vous modifier ? (1, 2 ou 3) : ")
+        try:
+            choix = int(saisie)
+        except ValueError:
+            print("Veuillez entrer un nombre entier valide (1, 2 ou 3).")
+
+    if choix == 1:
+        nouveau_libelle = input("Nouveau nom du libellé : ")
+        while nouveau_libelle == budget_modifie[0]:
+            nouveau_libelle = input("Le nouveau nom doit être différent.\nNouveau nom du libellé : ")
+        budget_modifie[0] = nouveau_libelle
+
+    elif choix == 2:
+        nouveau_montant = None
+        saisie_valide = False
+        while not saisie_valide:
+            saisie = input(f"Nouveau montant du budget {budget_modifie[0]} (actuel : {budget_modifie[1]}€) : ")
+            try:
+                nouveau_montant = float(saisie)
+                if nouveau_montant != budget_modifie[1]:
+                    saisie_valide = True
+                else:
+                    print("Le montant doit être différent.")
+            except ValueError:
+                print("Veuillez entrer un montant valide (nombre).")
+        budget_modifie[1] = nouveau_montant
+
+    elif choix == 3:
+        print(f"Compte actuel : {budget_modifie[2]}")
+        nouveau_compte = selection_compte(lst_cpt, courant=False)
+        budget_modifie[2] = nouveau_compte
+
+    boucle = ""
+    while boucle.upper() not in ['O', 'N']:
+        boucle = input("Souhaitez-vous modifier un autre budget ? (O/N) : ")
+        if boucle.upper() not in ['O', 'N']:
+            print("Veuillez répondre par 'O' pour Oui ou 'N' pour Non.")
+    return modifier_budget(lst_bud, lst_cpt) if boucle.upper() == 'O' else None
+
+
 def identification() -> None:
     """
     Fonction qui gère le comportement du logiciel, en fonction des entrées de l'utilisateur.
@@ -576,16 +632,22 @@ def identification() -> None:
                     print("|-----Ajout d'opération-----|")
                     operation = creation_operation(lst_cpt, lst_bud)
                     ajout_operation(lst_ope, operation)
-                    print(f"Opération :\n{operation}\najoutée avec succès.")
+                    affichage_ope = f"| Date : {operation[0].strftime("%d/%m/%Y")} - "\
+                                    f"Libellé : {operation[1]} - "\
+                                    f"Montant : {operation[3]} - "\
+                                    f"Mode de paiement : {operation[4]} - "\
+                                    f"Etat : {operation[5]} - "\
+                                    f"Budget : {operation[6]} |"
+                    print(f"Opération :\n{affichage_ope}\najoutée avec succès.")
                 case 4:  # Ajouter un budget
                     print("|-----Ajout d'un budget-----|")
                     budget = creation_budget(lst_cpt, lst_bud)
                     ajout_budget(lst_bud, budget)
                 case 5:  # Modifier un budget
                     print("|-----Modification d'un budget-----|")
-                    pass
-                case 6:
-                    print("|-----Dépenses / budget-----|")
+                    modifier_budget(lst_bud, lst_cpt)
+                case 6:     # Rapport dépense budget
+                    print("|-----Rapport dépenses / budget-----|")
                     pass
                 case 7:  # Effectuer un virement entre comptes
                     print("|-----Virement compte A -> compte B-----|")
@@ -595,7 +657,6 @@ def identification() -> None:
                     print("|-----Affichage des opérations d'un compte-----|")
                     compte = selection_compte(lst_cpt, courant=False)
                     for operation in lst_ope:
-                        print(operation, len(operation))
                         if operation[2] == compte:
                             print(f"| Date : {operation[0].strftime("%d/%m/%Y")} - "
                                   f"Libellé : {operation[1]} - "
@@ -605,6 +666,7 @@ def identification() -> None:
                                   f"Budget : {operation[6]} |")
                 case 9:  # Déconnexion
                     return identification()
+            lst_ope = sorted(lst_ope, key=lambda ope: ope[0])   # Trie la liste des opérations par rapport à leur date
             enregistrement_modif(lst_cpt, lst_ope, lst_bud, identifiant, cle_cryptage)
             choix = int(input("Quelle fonctionnalité souhaitez-vous accéder ? : "))
 
