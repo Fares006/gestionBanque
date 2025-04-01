@@ -4,6 +4,14 @@
 #   |--------------------------------------------|   #
 # --Imports-- #
 import datetime
+import calendar
+import locale
+
+try:
+    locale.setlocale(locale.LC_TIME, 'fr_FR.UTF-8')
+except locale.Error:
+    pass
+
 
 # --Constantes-- #
 CLE_CRYPTAGE = 23
@@ -488,7 +496,7 @@ def enregistrement_modif(lst_cpt: list, lst_ope: list, lst_bud: list, identifian
     Args:
         lst_cpt (list): liste des comptes de l'utilisateur.
         lst_ope (list): liste des opérations de l'utilisateur.
-        lst_bud (list): liste des budgets de l'utilisateur
+        lst_bud (list): liste des budgets de l'utilisateur.
         identifiant (str): identifiant de l'utilisateur.
         cle_cryptage (int): clé de cryptage unique à l'utilisateur.
 
@@ -517,11 +525,11 @@ def modifier_budget(lst_bud: list, lst_cpt: list) -> None:
     Modifie un budget avec les informations souhaitées.
 
     Args:
-        lst_bud (list):
-        lst_cpt (list):
+        lst_bud (list): liste des budgets de l'utilisateur.
+        lst_cpt (list): listes des comptes de l'utilisateur.
 
     Returns:
-
+        None
     """
     budget_modifie = selection_budget(lst_bud)
     print("1. Libellé\n2. Montant\n3. Compte associé")
@@ -567,6 +575,32 @@ def modifier_budget(lst_bud: list, lst_cpt: list) -> None:
         if boucle.upper() not in ['O', 'N']:
             print("Veuillez répondre par 'O' pour Oui ou 'N' pour Non.")
     return modifier_budget(lst_bud, lst_cpt) if boucle.upper() == 'O' else None
+
+
+def rapport_bud_depenses(budget: list, lst_ope: list, mois: int, annee: int) -> float:
+    """
+    Calcule le rapport dépense / budget pour un mois et une année donnée.
+
+    Args:
+        budget (list): liste des budgets de l'utilisateur.
+        lst_ope (list): liste des opérations de l'utilisateur.
+        mois (int): le mois (1-12)
+        annee (int): l'année
+
+    Returns:
+        float: le rapport dépense/budget
+    """
+    nom_budget = budget[0]
+    montant_budget = budget[1]
+    depenses_budget = 0
+    for operation in lst_ope:
+        # operation[6] correspond au nom du budget associé à l'opération, operation[0] correspond à la date.
+
+        if (operation[6] == nom_budget and operation[3] < 0
+                and int(operation[0].strftime('%m')) == mois and int(operation[0].strftime('%Y')) == annee):
+            depenses_budget += abs(operation[3])
+    rapport = (depenses_budget / montant_budget)
+    return rapport
 
 
 def identification() -> None:
@@ -648,7 +682,27 @@ def identification() -> None:
                     modifier_budget(lst_bud, lst_cpt)
                 case 6:     # Rapport dépense budget
                     print("|-----Rapport dépenses / budget-----|")
-                    pass
+                    budget = selection_budget(lst_bud)
+                    saisie_mois, saisie_valide = input("Sélectionnez le mois (1-12) : "), False
+                    while not saisie_valide:
+                        try:
+                            mois = int(saisie_mois)
+                            if mois in range(1, 13):
+                                saisie_valide = True
+                        except ValueError:
+                            print("Saisissez un entier de 1 à 12. (1 : janvier, 12 : décembre)")
+                    saisie_annee, saisie_valide = input("Sélectionnez l'année : "), False
+                    while not saisie_valide:
+                        try:
+                            annee = int(saisie_annee)
+                            saisie_valide = True
+                        except ValueError:
+                            print("Saisissez une année correcte.")
+
+                    rapport = rapport_bud_depenses(budget, lst_ope, mois, annee)
+                    print(f"Pour le budget {budget[0]} au mois de {calendar.month_name[mois].capitalize()}, "
+                          f"vous avez utilisé {rapport*100} % de votre budget.\n"
+                          f"Dépense / budget :\n {format(rapport * budget[1], '%.2f')}€ / {budget[1]}€")
                 case 7:  # Effectuer un virement entre comptes
                     print("|-----Virement compte A -> compte B-----|")
                     nouveau_virement = creer_virement(lst_cpt, dict_soldes)
