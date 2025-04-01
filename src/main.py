@@ -700,9 +700,9 @@ def identification() -> None:
                             print("Saisissez une année correcte.")
 
                     rapport = rapport_bud_depenses(budget, lst_ope, mois, annee)
-                    print(f"Pour le budget {budget[0]} au mois de {calendar.month_name[mois].capitalize()}, "
+                    print(f"Pour le budget {budget[0]} au mois de {calendar.month_name[mois].capitalize(), annee}, "
                           f"vous avez utilisé {rapport*100} % de votre budget.\n"
-                          f"Dépense / budget :\n {format(rapport * budget[1], '%.2f')}€ / {budget[1]}€")
+                          f"Dépense / budget :\n {rapport * budget[1]:.2f}€ / {budget[1]}€")
                 case 7:  # Effectuer un virement entre comptes
                     print("|-----Virement compte A -> compte B-----|")
                     nouveau_virement = creer_virement(lst_cpt, dict_soldes)
