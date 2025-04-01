@@ -8,6 +8,7 @@ from src.main import import_idents, cryptage, decryptage, CLE_CRYPTAGE
 # --Constantes-- #
 dict_ident = import_idents(chemin_fichier='./ident.txt')
 
+
 # --Fonctions-- #
 def crypter_fichier(path: str, cle: int) -> None:
     """
@@ -15,6 +16,7 @@ def crypter_fichier(path: str, cle: int) -> None:
 
     Args:
         path: le chemin absolu du fichier
+        cle: clé de cryptage
     """
     resultat = ''
     fichier = open(file=path, mode='r', encoding='utf-8')
@@ -35,6 +37,7 @@ def decrypter_fichier(path: str, cle: int = 0) -> None:
 
     Args:
         path: le chemin absolu du fichier
+        cle: clé de cryptage
     """
     resultat = ''
     fichier = open(file=path, mode='r', encoding='utf-8')

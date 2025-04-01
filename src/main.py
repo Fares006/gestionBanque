@@ -195,7 +195,6 @@ def get_identifiant() -> str:
             nb_essais += 1
             print(f"Identifiant introuvable. Vous avez {5 - nb_essais} essais restants.")
         else:
-            identifiant_trouve = True
             return identifiant
     return ''
 
@@ -220,7 +219,6 @@ def get_mdp(identifiant: str) -> str:
             nb_essais += 1
             print(f"Mot de passe incorrect. Vous avez {5 - nb_essais} essais restants.")
         else:
-            connecte = True
             return mdp
     return ''
 
@@ -244,7 +242,7 @@ def login() -> tuple:
 
 def selection_compte(lst_cpt: list, courant: bool = True) -> str:
     """
-    Interface qui permet de sélectionner un compte parmis ceux qui sont présents sur
+    Interface qui permet de sélectionner un compte parmi ceux qui sont présents sur
     le compte bancaire d'un utilisateur, pour diverses utilisations.
 
     Args:
@@ -268,7 +266,7 @@ def selection_compte(lst_cpt: list, courant: bool = True) -> str:
 
 def selection_budget(lst_bud: list) -> list:
     """
-    Interface qui permet de sélectionner un budget parmis ceux qui sont présents sur
+    Interface qui permet de sélectionner un budget parmi ceux qui sont présents sur
     le compte bancaire d'un utilisateur, pour diverses utilisations.
 
     Args:
@@ -422,7 +420,7 @@ def creer_virement(lst_cpt: list, dict_soldes: dict) -> tuple:
         dict_soldes (dict): dictionnaire des soldes de chaque compte de l'utilisateur.
 
     Returns:
-        tuple: le virement prêt à être exécuter.
+        tuple: le virement prêt à être exécuté.
     """
     print("Sélectionnez le compte émetteur : ")
     compte_emetteur = selection_compte(lst_cpt, courant=False)
@@ -431,7 +429,8 @@ def creer_virement(lst_cpt: list, dict_soldes: dict) -> tuple:
     while compte_emetteur == compte_benef:
         print("Le compte émetteur doit être différent du compte bénéficiaire.")
         compte_benef = selection_compte(lst_cpt, courant=False)
-    montant = float(input(f"Saisissez le montant du virement à effectuer (solde : {calcul_solde(lst_cpt, compte=compte_emetteur)}) : "))
+    montant = float(input(f"Saisissez le montant du virement à effectuer "
+                          f"(solde : {calcul_solde(lst_cpt, compte=compte_emetteur)}) : "))
     while montant > dict_soldes[compte_emetteur]:
         print(f"Il n'y a pas assez de provisions sur ce compte pour effectuer ce virement. "
               f"({montant} > {dict_soldes[compte_emetteur]})")
@@ -460,12 +459,12 @@ def ajout_virement(virement: tuple, lst_ope: list, dict_soldes: dict) -> None:
                     True,
                     "...")
     ope_benef = (datetime.date.today(),
-                    f"Virement - bénéficiaire",
-                    virement[1],    # Compte émetteur
-                    virement[2],    # Montant, négatif
-                    "Application",
-                    True,
-                    "...")
+                 f"Virement - bénéficiaire",
+                 virement[1],    # Compte émetteur
+                 virement[2],    # Montant, négatif
+                 "Application",
+                 True,
+                 "...")
     ajout_operation(lst_ope, operation=ope_emetteur)
     ajout_operation(lst_ope, operation=ope_benef)
     dict_soldes[virement[0]] -= virement[2]
