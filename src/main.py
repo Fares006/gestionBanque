@@ -663,7 +663,7 @@ def identification() -> None:
                                                         True,
                                                         "..."))
                 case 3:  # Afficher les opérations d'un compte
-                    choix = input("Filtrer selon un intervalle ? (O/N) :")
+                    choix = input("Filtrer selon une période ? (O/N) :")
                     if choix == 'O':
                         chosen_Date1 = input("Renseignez la date plancher (jj/mm/aaaa) : ")
                         chosen_Date2 = input("Renseignez la date limite (jj/mm/aaaa) : ")
