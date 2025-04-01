@@ -346,7 +346,7 @@ def creation_operation(lst_cpt: list, lst_bud: list) -> tuple:
             print("Format invalide. Veuillez entrer une date au format jj/mm/aaaa.")
     libelle = input("Libellé de l'opération : ")
     compte = selection_compte(lst_cpt, courant=False)
-    montant = float(input("Montant (positif / négatif) : "))
+    montant = float(input("Montant (-montant si négatif) : "))
     mode_paiement = input("Mode de paiement : ")
     etat = input("L'opération est elle passée ? (O/N) : ").upper()
     while etat not in ['O', 'N']:
@@ -698,9 +698,8 @@ def identification() -> None:
                             saisie_valide = True
                         except ValueError:
                             print("Saisissez une année correcte.")
-
                     rapport = rapport_bud_depenses(budget, lst_ope, mois, annee)
-                    print(f"Pour le budget {budget[0]} au mois de {calendar.month_name[mois].capitalize(), annee}, "
+                    print(f"Pour le budget {budget[0]} au mois de {calendar.month_name[mois].capitalize()} {annee}, "
                           f"vous avez utilisé {rapport*100} % de votre budget.\n"
                           f"Dépense / budget :\n {rapport * budget[1]:.2f}€ / {budget[1]}€")
                 case 7:  # Effectuer un virement entre comptes
