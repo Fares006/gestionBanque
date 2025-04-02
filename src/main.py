@@ -424,13 +424,18 @@ def creer_virement(lst_cpt: list, dict_soldes: dict) -> tuple:
     """
     print("Sélectionnez le compte émetteur : ")
     compte_emetteur = selection_compte(lst_cpt, courant=False)
+    solde_emetteur = calcul_solde(lst_cpt, compte=compte_emetteur)
+    while solde_emetteur <= 0:
+        print(f"Le solde de ce compte ({solde_emetteur} €) ne permet pas de faire un virement. "
+              f"Veuillez choisir un autre compte émetteur.")
+        compte_emetteur = selection_compte(lst_cpt, courant=False)
     print("Sélectionnez le compte bénéficiaire : ")
     compte_benef = selection_compte(lst_cpt, courant=False)
     while compte_emetteur == compte_benef:
         print("Le compte émetteur doit être différent du compte bénéficiaire.")
         compte_benef = selection_compte(lst_cpt, courant=False)
     montant = float(input(f"Saisissez le montant du virement à effectuer "
-                          f"(solde : {calcul_solde(lst_cpt, compte=compte_emetteur)}) : "))
+                          f"(solde : {solde_emetteur}) : "))
     while montant > dict_soldes[compte_emetteur]:
         print(f"Il n'y a pas assez de provisions sur ce compte pour effectuer ce virement. "
               f"({montant} > {dict_soldes[compte_emetteur]})")
