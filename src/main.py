@@ -735,7 +735,7 @@ def identification() -> None:
                 case 5:  # Afficher les budgets
                     print(f"|-----Affichage des budgets du compte de {identifiant} -----|")
                     for budget in lst_bud:
-                        print(f"- {budget[0]} : {budget[1]}€ depuis {budget[2]}")
+                        print(f"- {budget[0]} : {budget[1]}€ associé au compte : {budget[2]}")
                 case 6:  # Ajouter un budget
                     print("|-----Ajout d'un budget-----|")
                     budget = creation_budget(lst_cpt, lst_bud)
