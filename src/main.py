@@ -12,7 +12,6 @@ try:
 except locale.Error:
     pass
 
-
 # --Constantes-- #
 CLE_CRYPTAGE = 23
 
@@ -354,7 +353,7 @@ def creation_operation(lst_cpt: list, lst_bud: list) -> tuple:
             etat = True
         case 'N':
             etat = False
-    budget = selection_budget(lst_bud)[0]       # On choisit seulement le nom / libellé du budget ici
+    budget = selection_budget(lst_bud)[0]  # On choisit seulement le nom / libellé du budget ici
     operation = date_op, libelle, compte, montant, mode_paiement, etat, budget
     return operation
 
@@ -453,15 +452,15 @@ def ajout_virement(virement: tuple, lst_ope: list, dict_soldes: dict) -> None:
     """
     ope_emetteur = (datetime.date.today(),
                     f"Virement - émetteur",
-                    virement[0],    # Compte émetteur
-                    -virement[2],    # Montant, négatif
+                    virement[0],  # Compte émetteur
+                    -virement[2],  # Montant, négatif
                     "Application",
                     True,
                     "...")
     ope_benef = (datetime.date.today(),
                  f"Virement - bénéficiaire",
-                 virement[1],    # Compte émetteur
-                 virement[2],    # Montant, négatif
+                 virement[1],  # Compte émetteur
+                 virement[2],  # Montant, négatif
                  "Application",
                  True,
                  "...")
@@ -602,6 +601,59 @@ def rapport_bud_depenses(budget: list, lst_ope: list, mois: int, annee: int) -> 
     return rapport
 
 
+def afficher_operations(lst_ope: list, compte: str, filtre_date: bool = False) -> None:
+    """
+    Affiche les opérations de l'utilisateur, en fonction d'un compte et, si précisé, filtré selon une période.
+
+    Args:
+        lst_ope: liste des opérations de l'utilisateur
+        compte: le nom du compte
+        filtre_date: boolén pour savoir si l'on doit filtrer (filtre_date == True) par la date ou non
+
+    Returns:
+        None
+    """
+    if filtre_date:
+        date_valide = False
+        while not date_valide:
+            saisie = input("Date plancher des opérations (jj/mm/aaaa): ")
+            try:
+                plancher = datetime.datetime.strptime(saisie, "%d/%m/%Y").date()
+                date_valide = True
+            except ValueError:
+                print("Format invalide. Veuillez entrer une date au format jj/mm/aaaa.")
+        date_valide = False
+        while not date_valide:
+            saisie = input("Date limite des opérations (jj/mm/aaaa): ")
+            try:
+                limite = datetime.datetime.strptime(saisie, "%d/%m/%Y").date()
+                if plancher < limite:
+                    date_valide = True
+                else:
+                    print("La date limite doit être inférieure ou égale au plancher.")
+            except ValueError:
+                print("Format invalide. Veuillez entrer une date au format jj/mm/aaaa.")
+        for operation in lst_ope:
+            if operation[2] == compte and plancher <= operation[0] <= limite:
+                print(f"| Date : {operation[0].strftime("%d/%m/%Y")} - "
+                      f"Libellé : {operation[1]} - "
+                      f"Montant : {operation[3]} - "
+                      f"Mode de paiement : {operation[4]} - "
+                      f"Etat : {operation[5]} - "
+                      f"Budget : {operation[6]} |")
+    else:
+        for operation in lst_ope:
+            if operation[2] == compte:
+                print(f"| Date : {operation[0].strftime("%d/%m/%Y")} - "
+                      f"Libellé : {operation[1]} - "
+                      f"Montant : {operation[3]} - "
+                      f"Mode de paiement : {operation[4]} - "
+                      f"Etat : {operation[5]} - "
+                      f"Budget : {operation[6]} |")
+
+
+
+
 def identification() -> None:
     """
     Fonction qui gère le comportement du logiciel, en fonction des entrées de l'utilisateur.
@@ -632,7 +684,7 @@ def identification() -> None:
               "2. Ajouter un compte\n"
               "3. Afficher les opérations d'un compte\n"
               "4. Ajouter une opération\n"
-              "5. Afficher les budgets\n"              
+              "5. Afficher les budgets\n"
               "6. Ajouter un budget\n"
               "7. Modifier un budget\n"
               "8. Afficher différence dépenses/budget\n"
@@ -663,43 +715,26 @@ def identification() -> None:
                                                         True,
                                                         "..."))
                 case 3:  # Afficher les opérations d'un compte
-                    choix = input("Filtrer selon une période ? (O/N) :")
-                    if choix == 'O':
-                        chosen_Date1 = input("Renseignez la date plancher (jj/mm/aaaa) : ")
-                        chosen_Date2 = input("Renseignez la date limite (jj/mm/aaaa) : ")
-                        print("|-----Affichage des opérations d'un compte-----|")
-                        compte = selection_compte(lst_cpt, courant=False)
-                        for operation in lst_ope:
-                            if operation[2] == compte and operation[0] >= datetime.datetime.strptime(chosen_Date1, "%d/%m/%Y").date() and operation[0] <= datetime.datetime.strptime(chosen_Date2, "%d/%m/%Y").date():
-                                        print(f"| Date : {operation[0].strftime("%d/%m/%Y")} - "
-                                        f"Libellé : {operation[1]} - "
-                                        f"Montant : {operation[3]} - "
-                                        f"Mode de paiement : {operation[4]} - "
-                                        f"Etat : {operation[5]} - "
-                                        f"Budget : {operation[6]} |")
-                    else:
-                        print("|-----Affichage des opérations d'un compte-----|")
-                        compte = selection_compte(lst_cpt, courant=False)
-                        for operation in lst_ope:
-                            if operation[2] == compte:
-                                print(f"| Date : {operation[0].strftime("%d/%m/%Y")} - "
-                                    f"Libellé : {operation[1]} - "
-                                    f"Montant : {operation[3]} - "
-                                    f"Mode de paiement : {operation[4]} - "
-                                    f"Etat : {operation[5]} - "
-                                    f"Budget : {operation[6]} |")
+                    print("|-----Affichage des opérations d'un compte-----|")
+                    compte = selection_compte(lst_cpt, courant=False)
+                    choix_filtrer_date = ""
+                    while choix_filtrer_date.upper() not in ['O', 'N']:
+                        choix_filtrer_date = input("Voulez-vous filtrer les opérations entre deux dates ? (O/N) : ")
+                        if choix_filtrer_date.upper() not in ['O', 'N']:
+                            print("Veuillez répondre par 'O' pour Oui ou 'N' pour Non.")
+                    afficher_operations(lst_ope, compte, filtre_date=(choix_filtrer_date.upper() == 'O'))
                 case 4:  # Ajouter une opération
                     print("|-----Ajout d'opération-----|")
                     operation = creation_operation(lst_cpt, lst_bud)
                     ajout_operation(lst_ope, operation)
-                    affichage_ope = f"| Date : {operation[0].strftime("%d/%m/%Y")} - "\
-                                    f"Libellé : {operation[1]} - "\
-                                    f"Montant : {operation[3]} - "\
-                                    f"Mode de paiement : {operation[4]} - "\
-                                    f"Etat : {operation[5]} - "\
+                    affichage_ope = f"| Date : {operation[0].strftime("%d/%m/%Y")} - " \
+                                    f"Libellé : {operation[1]} - " \
+                                    f"Montant : {operation[3]} - " \
+                                    f"Mode de paiement : {operation[4]} - " \
+                                    f"Etat : {operation[5]} - " \
                                     f"Budget : {operation[6]} |"
                     print(f"Opération :\n{affichage_ope}\najoutée avec succès.")
-                case 5: # Afficher les budget
+                case 5:  # Afficher les budgets
                     print(f"|-----Affichage des budgets du compte de {identifiant} -----|")
                     for budget in lst_bud:
                         print(f"- {budget[0]} : {budget[1]}€ depuis {budget[2]}")
@@ -710,7 +745,7 @@ def identification() -> None:
                 case 7:  # Modifier un budget
                     print("|-----Modification d'un budget-----|")
                     modifier_budget(lst_bud, lst_cpt)
-                case 8:     # Rapport dépense budget
+                case 8:  # Rapport dépense budget
                     print("|-----Rapport dépenses / budget-----|")
                     budget = selection_budget(lst_bud)
                     saisie_mois, saisie_valide = input("Sélectionnez le mois (1-12) : "), False
@@ -730,7 +765,7 @@ def identification() -> None:
                             print("Saisissez une année correcte.")
                     rapport = rapport_bud_depenses(budget, lst_ope, mois, annee)
                     print(f"Pour le budget {budget[0]} au mois de {calendar.month_name[mois].capitalize()} {annee}, "
-                          f"vous avez utilisé {rapport*100} % de votre budget.\n"
+                          f"vous avez utilisé {rapport * 100} % de votre budget.\n"
                           f"Dépense / budget :\n {rapport * budget[1]:.2f}€ / {budget[1]}€")
                 case 9:  # Effectuer un virement entre comptes
                     print("|-----Virement compte A -> compte B-----|")
@@ -738,7 +773,7 @@ def identification() -> None:
                     ajout_virement(nouveau_virement, lst_ope, dict_soldes)
                 case 10:  # Déconnexion
                     return identification()
-            lst_ope = sorted(lst_ope, key=lambda ope: ope[0])   # Trie la liste des opérations par rapport à leur date
+            lst_ope = sorted(lst_ope, key=lambda ope: ope[0])  # Trie la liste des opérations par rapport à leur date
             enregistrement_modif(lst_cpt, lst_ope, lst_bud, identifiant, cle_cryptage)
             choix = int(input("Quelle fonctionnalité souhaitez-vous accéder ? : "))
 
