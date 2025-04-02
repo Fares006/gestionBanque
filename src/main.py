@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #   |--------------------------------------------|   #
 #   |--------Gestion de Budget (avec IHM)--------|   #
 #   |--Groupe 2 (MOUSSA, ASSEMAT, JIN, ZAMOURI)--|   #
@@ -8,7 +9,7 @@ import calendar
 import locale
 
 try:
-    locale.setlocale(locale.LC_TIME, 'fr_FR.UTF-8')
+    locale.setlocale(locale.LC_TIME, 'French_France.1252')
 except locale.Error:
     pass
 
@@ -758,7 +759,7 @@ def identification() -> None:
                             print("Format invalide. Veuillez entrer une date au format mm/yyyy.")
                     rapport = rapport_bud_depenses(budget, lst_ope, mois, annee)
                     print(f"Pour le budget {budget[0]} au mois de {calendar.month_name[mois].capitalize()} {annee}, "
-                          f"vous avez utilisé {rapport * 100} % de votre budget.\n"
+                          f"vous avez utilisé {(rapport * 100):.2f} % de votre budget.\n"
                           f"Dépense / budget :\n {rapport * budget[1]:.2f}€ / {budget[1]}€")
                 case 9:  # Effectuer un virement entre comptes
                     print("|-----Virement compte A -> compte B-----|")
