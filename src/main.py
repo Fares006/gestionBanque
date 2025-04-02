@@ -652,8 +652,6 @@ def afficher_operations(lst_ope: list, compte: str, filtre_date: bool = False) -
                       f"Budget : {operation[6]} |")
 
 
-
-
 def identification() -> None:
     """
     Fonction qui gère le comportement du logiciel, en fonction des entrées de l'utilisateur.
@@ -748,21 +746,16 @@ def identification() -> None:
                 case 8:  # Rapport dépense budget
                     print("|-----Rapport dépenses / budget-----|")
                     budget = selection_budget(lst_bud)
-                    saisie_mois, saisie_valide = input("Sélectionnez le mois (1-12) : "), False
+                    saisie_valide = False
                     while not saisie_valide:
+                        saisie = input("Entrez le mois et l'année (mm/yyyy) : ")
                         try:
-                            mois = int(saisie_mois)
-                            if mois in range(1, 13):
-                                saisie_valide = True
-                        except ValueError:
-                            print("Saisissez un entier de 1 à 12. (1 : janvier, 12 : décembre)")
-                    saisie_annee, saisie_valide = input("Sélectionnez l'année : "), False
-                    while not saisie_valide:
-                        try:
-                            annee = int(saisie_annee)
+                            date_obj = datetime.datetime.strptime(saisie, "%m/%Y")
+                            mois = date_obj.month
+                            annee = date_obj.year
                             saisie_valide = True
                         except ValueError:
-                            print("Saisissez une année correcte.")
+                            print("Format invalide. Veuillez entrer une date au format mm/yyyy.")
                     rapport = rapport_bud_depenses(budget, lst_ope, mois, annee)
                     print(f"Pour le budget {budget[0]} au mois de {calendar.month_name[mois].capitalize()} {annee}, "
                           f"vous avez utilisé {rapport * 100} % de votre budget.\n"
