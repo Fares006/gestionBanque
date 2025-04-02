@@ -671,6 +671,7 @@ def identification() -> None:
     identifiant = login_state[1]
     cle_cryptage = dict_ident[identifiant][-1]
     choix = -1
+    nom = dict_ident[identifiant][1]
     while login_state[0] and choix != 0:
         lst_cpt = import_comptes(chemin_fichier=f'../users/{identifiant}.txt', cle=cle_cryptage)
         lst_ope = import_operations(chemin_fichier=f'../users/{identifiant}.txt', cle=cle_cryptage)
@@ -739,9 +740,8 @@ def identification() -> None:
                                     f"Budget : {operation[6]} |"
                     print(f"Opération :\n{affichage_ope}\najoutée avec succès.")
                 case 5:  # Afficher les budgets
-                    print(f"|-----Affichage des budgets du compte de {identifiant} -----|")
-                    for budget in lst_bud:
-                        print(f"- {budget[0]} : {budget[1]}€ associé au compte : {budget[2]}")
+                    print(f"|-----Affichage des budgets de {nom} -----|")
+                    print("\n".join(f"- {budget[0]} : {budget[1]}€ associé au compte : {budget[2]}" for budget in lst_bud))
                 case 6:  # Ajouter un budget
                     print("|-----Ajout d'un budget-----|")
                     budget = creation_budget(lst_cpt, lst_bud)
