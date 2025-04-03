@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #   |--------------------------------------------|   #
-#   |--------Gestion de Budget (avec IHM)--------|   #
+#   |--------Gestion de Banque (avec IHM)--------|   #
 #   |--Groupe 2 (MOUSSA, ASSEMAT, JIN, ZAMOURI)--|   #
 #   |--------------------------------------------|   #
 # --Imports-- #
@@ -290,11 +290,11 @@ def calcul_solde(lst_ope: list, compte: str) -> float:
     Calcule le solde d'un utilisateur grâce à la liste des opérations associées au compte.
 
     Args:
-        lst_ope: liste des opérations
-        compte:
+        lst_ope (list): liste des opérations
+        compte (str): le nom du compte
 
     Returns:
-        le montant présent sur le compte
+        float: le montant présent sur le compte
     """
     solde = 0
     for ope in lst_ope:
