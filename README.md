@@ -1,7 +1,7 @@
-# GestionBudget
+# gestionBanque
 
 ## Description du projet
-GestionBudget est un projet universitaire de gestion de comptes bancaires et de budgets. L'application est développée en **Python** et utilise **Tkinter** pour la partie graphique (prévue en fin de projet). Ce projet académique a pour but d'offrir une interface permettant aux utilisateurs de gérer leurs comptes et budgets de manière intuitive.
+gestionBanque est un projet universitaire de gestion de comptes bancaires et de budgets. L'application est développée en **Python** et utilise **Tkinter** pour la partie graphique (prévue en fin de projet). Ce projet académique a pour but d'offrir une interface permettant aux utilisateurs de gérer leurs comptes et budgets de manière intuitive.
 
 ## Objectif du projet
 Ce projet a été réalisé dans le cadre des cours de **M. Jérôme Delobelle** et **M. Bruno Bouzy** à l'**Université Paris Cité**.
@@ -35,8 +35,8 @@ Ce projet a été réalisé dans le cadre des cours de **M. Jérôme Delobelle**
 1. Installer [Python 3.12](https://www.python.org/downloads/).
 2. Cloner le dépôt :  
    ```sh
-   git clone https://github.com/votre-utilisateur/gestionBudget.git
-   cd gestionBudget
+   git clone https://github.com/votre-utilisateur/gestionBanque.git
+   cd gestionBanque
    ```
 
 ## Utilisation
@@ -48,9 +48,9 @@ Ce projet a été réalisé dans le cadre des cours de **M. Jérôme Delobelle**
 
 ## Structure du projet
 ```
-gestionBudget/
+gestionBanque/
  |-- README.md                 # Documentation du projet
- |-- gestionBudget.iml         # Fichier de configuration du projet
+ |-- gestionBanque.iml         # Fichier de configuration du projet
  |-- misc.xml                  # Fichier de configuration supplémentaire
  |-- modules.xml               # Fichier de configuration des modules
  |-- vcs.xml                   # Fichier de configuration du contrôle de version
