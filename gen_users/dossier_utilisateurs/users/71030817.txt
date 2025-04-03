@@ -1,0 +1,26 @@
+CPT*Compte A
+CPT*Compte B
+CPT*Compte C
+OPE*31/01/2022*prime*Compte A*291.53*CHE*False*divertissement
+OPE*24/01/2022*essence*Compte A*-45.06*CB*True*santé
+OPE*08/01/2022*remboursement*Compte B*216.05*CHE*False*transport
+OPE*17/01/2022*vente*Compte C*164.02*CB*True*divers
+OPE*14/01/2022*cadeau*Compte B*-14.05*CHE*False*transport
+OPE*17/01/2022*salaire*Compte B*295.38*CB*True*sorties
+OPE*27/01/2022*vente*Compte C*165.02*VIR*False*transport
+OPE*09/01/2022*cadeau*Compte B*-11.79*VIR*True*santé
+OPE*07/01/2022*virement*Compte B*117.2*VIR*False*santé
+OPE*03/01/2022*prime*Compte A*296.79*CB*True*santé
+OPE*27/01/2022*pharmacie*Compte C*-22.52*CB*False*sorties
+OPE*20/01/2022*cinema*Compte C*-17.03*CHE*True*divertissement
+OPE*10/01/2022*vente*Compte A*249.66*VIR*True*divers
+OPE*06/01/2022*revenu*Compte A*223.77*CB*False*alimentation
+OPE*12/01/2022*pharmacie*Compte A*-37.41*CB*False*alimentation
+OPE*27/01/2022*vente*Compte C*223.3*CHE*False*divertissement
+OPE*10/01/2022*cinema*Compte C*-80.13*CHE*True*divers
+OPE*19/01/2022*salaire*Compte B*267.93*VIR*False*santé
+OPE*06/01/2022*vente*Compte B*271.94*CB*True*divers
+BUD*Autres*0*Autres
+BUD*sorties*200*Compte C
+BUD*alimentation*1000*Compte A
+BUD*divertissement*1000*Compte A

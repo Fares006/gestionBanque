@@ -1,0 +1,10 @@
+CPT*Compte A
+OPE*28/01/2022*courses*Compte A*-88.5*CHE*True*sorties
+OPE*19/01/2022*virement*Compte A*206.86*CHE*False*divers
+OPE*02/01/2022*revenu*Compte A*149.09*CHE*True*divers
+OPE*14/01/2022*courses*Compte A*-8.43*CB*True*alimentation
+BUD*Autres*0*Autres
+BUD*santé*100*Compte A
+BUD*divers*500*Compte A
+BUD*alimentation*500*Compte A
+BUD*sorties*500*Compte A
