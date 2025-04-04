@@ -1,6 +1,7 @@
 GTX*Gsqtxi$E
 GTX*Gsqtxi$F
 GTX*Gsqtxi$G
+GTX*Gsqtxi$Itevkri
 STI*4734536466*tvmqi*Gsqtxi$E*6=:2;=*GF*Xvyi*werxí
 STI*4:34536466*viziry*Gsqtxi$E*6672;;*GF*Xvyi*epmqirxexmsr
 STI*4:34536466*zirxi*Gsqtxi$F*6;52=8*GF*Xvyi*hmzivw
@@ -20,6 +21,10 @@ STI*6;34536466*zirxi*Gsqtxi$G*5:9246*ZMV*Xvyi*xverwtsvx
 STI*6;34536466*tlevqegmi*Gsqtxi$G*166296*GF*Xvyi*wsvxmiw
 STI*6;34536466*zirxi*Gsqtxi$G*66727*GLI*Xvyi*hmzivxmwwiqirx
 STI*7534536466*tvmqi*Gsqtxi$E*6=5297*GLI*Xvyi*hmzivxmwwiqirx
+STI*4834836469*Zmviqirx$1$íqixxiyv*Gsqtxi$E*154424*ZMV*Xvyi*222
+STI*4834836469*Zmviqirx$1$fíríjmgmemvi*Gsqtxi$F*54424*ZMV*Xvyi*222
+STI*4834836469*Zmviqirx$1$íqixxiyv*Gsqtxi$F*159424*ZMV*Xvyi*222
+STI*4834836469*Zmviqirx$1$fíríjmgmemvi*Gsqtxi$Itevkri*59424*ZMV*Xvyi*222
 FYH*Eyxviw*424*Eyxviw
 FYH*wsvxmiw*64424*Gsqtxi$G
 FYH*epmqirxexmsr*544424*Gsqtxi$E

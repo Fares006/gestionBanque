@@ -85,7 +85,7 @@ def identification() -> tuple:
     Returns:
         tuple:
             - bool : True si l'identification est réussie, False sinon.
-            - str  : L'identifiant saisi (vide si l'utilisateur échoue à s'identifier).
+            - str : L'identifiant saisi (vide si l'utilisateur échoue à s'identifier).
     """
     identifiant = get_identifiant()
     if identifiant != '':

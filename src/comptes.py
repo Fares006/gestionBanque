@@ -8,12 +8,13 @@
 # --Imports-- #
 import datetime
 from shared import saisir_choix, saisir_date
+from copy import copy
 
 
 # --Constantes-- #
 
 # --Fonctions-- #
-def selection_compte(lst_cpt: list, courant: bool = True) -> str:
+def selection_compte(lst_cpt: list, courant: bool = True, exclude_self: bool = False, cpt_self: str = None) -> str:
     """
     Permet à l'utilisateur de sélectionner un compte parmi ceux disponibles.
 
@@ -25,19 +26,35 @@ def selection_compte(lst_cpt: list, courant: bool = True) -> str:
         lst_cpt (list): Liste des comptes de l'utilisateur (ex. ["Compte A", "Compte B"]).
         courant (bool): Si True (par défaut), sélectionne automatiquement le premier compte. 
                         Si False, propose à l'utilisateur de choisir un compte manuellement.
+        exclude_self (bool): Si l'opération demande à l'utilisateur de faire un virement par exemple,
+                             on n'autorise pas la sélection du compte émetteur en tant que bénéficiaire.
+        cpt_self (str): Le compte à ne pas inclure dans la liste des choix.
 
     Returns:
         str: Le nom du compte sélectionné par l'utilisateur.
     """
     choix = 0
+    i = 0
     nb_comptes = len(lst_cpt)
+    epuise = False
     if not courant:
         print("Faites le choix du compte : ")
-        for i in range(nb_comptes):
-            print(f'{i + 1}. {lst_cpt[i]}')
+        while i < nb_comptes and not epuise:
+            if not exclude_self:
+                print(f'{i + 1}. {lst_cpt[i]}')
+                i += 1
+            else:
+                lst_cpt_no_self = copy(lst_cpt)
+                lst_cpt_no_self.remove(cpt_self)
+                try:
+                    print(f'{i + 1}. {lst_cpt_no_self[i]}')
+                    i += 1
+                except IndexError:
+                    epuise = True
         print("Choisissez le compte: ")
-        choix = saisir_choix(valeurs_autorisees=set(range(1, nb_comptes+1))) - 1  # On enlève le 1 ajouté à l'affichage
-    compte_choisi = lst_cpt[choix]
+        choix = saisir_choix(
+            valeurs_autorisees=set(range(1, nb_comptes + 1))) - 1  # On enlève le 1 ajouté à l'affichage
+    compte_choisi = lst_cpt[choix] if not exclude_self else lst_cpt_no_self[choix]
     return compte_choisi
 
 
@@ -86,7 +103,7 @@ def ajout_compte(lst_cpt: list, nom: str) -> bool:
         print("Le compte existe déjà.")
         return False
     else:
-        lst_cpt.append(nom.capitalize())
+        lst_cpt.append(nom.title())
         print(f"Compte {nom} ajouté avec succès.")
         return True
 
@@ -166,7 +183,8 @@ def ajout_operation(lst_ope: list, operation: tuple) -> None:
     lst_ope.append(operation)
 
 
-def creer_virement(lst_cpt: list, dict_soldes: dict) -> tuple:
+def creer_virement(lst_cpt: list, dict_soldes: dict, is_nouveau_compte: bool = False,
+                   nouveau_compte: str = None) -> tuple:
     """
     Interface utilisateur permettant de créer un virement entre deux comptes.
 
@@ -174,18 +192,24 @@ def creer_virement(lst_cpt: list, dict_soldes: dict) -> tuple:
     - Le compte émetteur dispose d’un solde suffisant
     - Le compte bénéficiaire est différent du compte émetteur
     - Le montant saisi est valide et disponible
+    - Qu'il s'agit d'une opération de transfert du solde initial d'un nouveau compte
+        - Auquel cas, elle demande à l'utilisateur depuis quel compte se fera l'opération
 
     Elle retourne un tuple contenant les informations nécessaires pour effectuer le virement via ajout_virement().
 
     Args:
         lst_cpt (list): Liste des comptes de l'utilisateur.
         dict_soldes (dict): Dictionnaire des soldes de chaque compte de l'utilisateur.
+        is_nouveau_compte (bool) : Si True, alors on ne demande pas à l'utilisateur le compte bénéficiaire,
+                                   il sera automatiquement nouveau_compte
+        nouveau_compte (str) : Le nom du nouveau compte qu'aura créé l'utilisateur
 
     Returns:
         tuple: Le virement sous forme (compte_emetteur, compte_beneficiaire, montant)
     """
     print("Sélectionnez le compte émetteur : ")
-    compte_emetteur = selection_compte(lst_cpt, courant=False)
+    compte_emetteur = selection_compte(lst_cpt, courant=False, exclude_self=True, cpt_self=nouveau_compte) \
+        if is_nouveau_compte else selection_compte(lst_cpt, courant=False)
     solde_emetteur = dict_soldes[compte_emetteur]
     # Vérifie que le solde du compte émetteur permet un virement
     while solde_emetteur <= 0:
@@ -194,17 +218,20 @@ def creer_virement(lst_cpt: list, dict_soldes: dict) -> tuple:
         compte_emetteur = selection_compte(lst_cpt, courant=False)
         solde_emetteur = dict_soldes[compte_emetteur]
 
-    print("Sélectionnez le compte bénéficiaire : ")
-    compte_benef = selection_compte(lst_cpt, courant=False)
-    # Vérifie que les comptes source et destination sont différents
-    while compte_emetteur == compte_benef:
-        print("Le compte émetteur doit être différent du compte bénéficiaire.")
+    if not is_nouveau_compte:
+        print("Sélectionnez le compte bénéficiaire : ")
         compte_benef = selection_compte(lst_cpt, courant=False)
+        # Vérifie que les comptes source et destination sont différents
+        while compte_emetteur == compte_benef:
+            print("Le compte émetteur doit être différent du compte bénéficiaire.")
+            compte_benef = selection_compte(lst_cpt, courant=False)
+    else:
+        compte_benef = nouveau_compte
 
-    saisie_montant = input(f"Saisissez le montant du virement à effectuer "
-                           f"(solde : {solde_emetteur:.2f} €) : ")
     saisie_montant_valide = False
-    while not saisie_montant_valide:    # Redemande un montant tant que celui-ci est invalide ou supérieur au solde
+    while not saisie_montant_valide:  # Redemande un montant tant que celui-ci est invalide ou supérieur au solde
+        saisie_montant = input(f"Saisissez le montant du virement à effectuer "
+                               f"(solde : {solde_emetteur:.2f} €) : ")
         try:
             montant = float(saisie_montant)
             if montant > 0:
@@ -216,10 +243,10 @@ def creer_virement(lst_cpt: list, dict_soldes: dict) -> tuple:
     while montant > dict_soldes[compte_emetteur]:
         print(f"Il n'y a pas assez de provisions sur ce compte pour effectuer ce virement. "
               f"({montant:.2f} € > {dict_soldes[compte_emetteur]:.2f} €)")
-        saisie_montant = input(f"Saisissez le montant du virement à effectuer "
-                               f"(solde : {solde_emetteur:.2f} €) : ")
         saisie_montant_valide = False
         while not saisie_montant_valide:
+            saisie_montant = input(f"Saisissez le montant du virement à effectuer "
+                                   f"(solde : {solde_emetteur:.2f} €) : ")
             try:
                 montant = float(saisie_montant)
                 if montant > 0:
@@ -272,7 +299,7 @@ def ajout_virement(virement: tuple, lst_ope: list, dict_soldes: dict) -> None:
 
     # Met à jour les soldes des deux comptes
     dict_soldes[virement[0]] -= virement[2]
-    dict_soldes[virement[1]] += virement[2]
+    dict_soldes[virement[1]] = dict_soldes.get(virement[1], 0) + dict_soldes.get(virement[1], virement[2])
 
 
 def calcul_dict_soldes(lst_cpt, lst_ope) -> dict:
@@ -366,6 +393,5 @@ def formatter_operation(operation: tuple) -> str:
                  f"État : {etat_str} - "
                  f"Budget : {operation[6]} |")
     return affichage
-
 
 # --Programme principal--

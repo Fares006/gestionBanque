@@ -6,9 +6,12 @@
 #   |-------Fonctions utilisées globalement------|   #
 #   |--------------------------------------------|   #
 # --Imports-- #
+import datetime
+import os
+import shutil
+import hashlib
 from cryptage_decryptage import cryptage
 from import_donnees import import_idents
-import datetime
 
 
 # --Constantes-- #
@@ -82,18 +85,42 @@ def enregistrement_modif(lst_cpt: list, lst_ope: list, lst_bud: list, identifian
     Returns:
         None
     """
-    lignes_cpt = ""
-    lignes_ope = ""
-    lignes_bud = ""
-    for compte in lst_cpt:
-        lignes_cpt += f"CPT*{compte}\n"
-    for ope in lst_ope:
-        lignes_ope += f"OPE*{ope[0].strftime("%d/%m/%Y")}*{ope[1]}*{ope[2]}*{ope[3]}*{ope[4]}*{ope[5]}*{ope[6]}\n"
-    for bud in lst_bud:
-        lignes_bud += f"BUD*{bud[0]}*{bud[1]}*{bud[2]}\n"
+    chemin_original = f"../users/{identifiant}.txt"
+    chemin_temporaire = f"../users/{identifiant}.tmp"
+    chemin_backup = f"../users/{identifiant}.bak"
 
-    texte = lignes_cpt + lignes_ope + lignes_bud
-    contenu_fichier = cryptage(texte, cle_cryptage)
+    try:
+        # Construction du contenu texte
+        lignes = []
+        for compte in lst_cpt:
+            lignes.append(f"CPT*{compte}")
+        for operation in lst_ope:
+            # Cette ligne crée l'enregistrement de l'opération en extractant chacun des champs de la liste et
+            # en les séparant d'une *
+            lignes.append(f"OPE*{'*'.join(map(str, operation))}")
+        for budget in lst_bud:
+            # Idem que pour les opérations
+            lignes.append(f"BUD*{'*'.join(map(str, budget))}")
+        contenu_en_clair = "\n".join(lignes)
 
-    with open(file=f'../users/{identifiant}.txt', mode='w+', encoding="utf-8") as fichier:
-        fichier.write(contenu_fichier)
+        # Calcul du hash SHA-256
+        hash_val = hashlib.sha256(contenu_en_clair.encode("utf-8")).hexdigest()
+        contenu_complet = contenu_en_clair + f"\nHASH*{hash_val}"
+        # Chiffrement César
+        texte_chiffre = cryptage(contenu_complet, cle_cryptage)
+
+        # Écriture dans le fichier temporaire
+        with open(chemin_temporaire, "w", encoding="utf-8") as f:
+            f.write(texte_chiffre)
+
+        # Sauvegarde de la version précédente
+        if os.path.exists(chemin_original):
+            shutil.copy(chemin_original, chemin_backup)
+
+        # Remplacement atomique
+        os.replace(chemin_temporaire, chemin_original)
+
+    except Exception as e:
+        print(f"Erreur lors de l'enregistrement sécurisé : {e}")
+        if os.path.exists(chemin_temporaire):
+            os.remove(chemin_temporaire)

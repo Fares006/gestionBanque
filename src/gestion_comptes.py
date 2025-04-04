@@ -90,17 +90,18 @@ def gestion_comptes(identifiant: int) -> None:
                 while boucle.upper() != 'N':
                     print("|-----Ajout de compte-----|")
                     nouveau_compte = input("Quel est le nom du nouveau compte ? : ")
-                    succes_ajout = ajout_compte(lst_cpt, nouveau_compte)
+                    succes_ajout = ajout_compte(lst_cpt, nouveau_compte.title())
                     if succes_ajout:
-                        solde_initial = float(input("Quel est le solde initial de ce nouveau compte ? : "))
-                        dict_soldes[nouveau_compte] = solde_initial
-                        ajout_operation(lst_ope, operation=(datetime.date.today(),
-                                                            f"Ouverture du compte {nouveau_compte}",
-                                                            nouveau_compte,
-                                                            solde_initial,
-                                                            "Application",
-                                                            True,
-                                                            "..."))
+                        demande_solde_init = ""
+                        while demande_solde_init.upper() not in ['O', 'N']:
+                            demande_solde_init = input("Souhaitez-vous charger le solde initial ? (O/N) : ")
+                            if demande_solde_init.upper() not in ['O', 'N']:
+                                print("Veuillez répondre par 'O' pour Oui ou 'N' pour Non.")
+                        if demande_solde_init.upper() == 'O':
+                            virement_solde_init = creer_virement(lst_cpt, dict_soldes,
+                                                                 is_nouveau_compte=True,
+                                                                 nouveau_compte=nouveau_compte.title())
+                            ajout_virement(virement_solde_init, lst_ope, dict_soldes)
                     boucle = ""
                     while boucle.upper() not in ['O', 'N']:
                         boucle = input("Souhaitez-vous ajouter un autre compte ? (O/N) : ")
