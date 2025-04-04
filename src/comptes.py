@@ -80,6 +80,7 @@ def calcul_solde(lst_ope: list, compte: str) -> float:
     solde = 0
     for ope in lst_ope:
         # ope[2] représente la case contenant le compte associé à une opération donnée.
+        # On vérifie l'état de l'opération avec ope[5], si elle est passé, on la prend en compte
         if ope[2] == compte and ope[5] is True:
             solde += ope[3]  # ope[3] correspond au montant (+/-) de l'opération.
     return solde

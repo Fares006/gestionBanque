@@ -9,6 +9,7 @@ prenoms_mixes = [
     "Zara", "Omar", "Imane", "Samir"
 ]
 
+
 # Fonction pour générer un utilisateur
 def generate_user_entry():
     identifiant = ''.join(random.choices('0123456789', k=8))
@@ -16,6 +17,7 @@ def generate_user_entry():
     prenom = random.choice(prenoms_mixes)
     cle = f"{random.randint(1, 25):02d}"  # clé entre 01 et 25
     return f"{identifiant}*{mdp}*{prenom}*{cle}"
+
 
 # Chemin du dossier de destination (modifie si besoin)
 dossier_cible = os.path.join(os.getcwd(), "dossier_utilisateurs")

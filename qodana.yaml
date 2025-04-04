@@ -27,3 +27,8 @@ profile:
 
 #Specify Qodana linter for analysis (Applied in CI/CD pipeline)
 linter: jetbrains/qodana-python:latest
+exclude:
+  - name: All
+    paths:
+      - gen_users\gen_ident.py
+      - gen_users\gen_id_users.py

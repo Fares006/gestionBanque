@@ -10,6 +10,7 @@ libelles_revenus = ["salaire", "remboursement", "virement", "revenu", "prime", "
 types_ope = ["CB", "CHE", "VIR"]
 budgets_possibles = ["sorties", "alimentation", "transport", "santé", "divertissement", "divers"]
 
+
 def generate_comptes():
     nb_total = random.randint(1, 3)
     comptes = []
@@ -23,6 +24,7 @@ def generate_comptes():
         comptes += random.sample(comptes_speciaux, nb_total - len(comptes))
 
     return [f"CPT*{c}" for c in comptes]
+
 
 def generate_operations(comptes):
     ops = []
@@ -56,6 +58,7 @@ def generate_operations(comptes):
     random.shuffle(ops)
     return ops
 
+
 def generate_budgets(comptes):
     buds = ["BUD*Autres*0*Autres"]
     compte_labels = [cpt.split("*")[1] for cpt in comptes]
@@ -66,6 +69,7 @@ def generate_budgets(comptes):
         compte = random.choice(compte_labels)
         buds.append(f"BUD*{bud}*{montant}*{compte}")
     return buds
+
 
 # Dossier contenant ident.txt
 base_dir = os.path.join(os.getcwd(), "dossier_utilisateurs")

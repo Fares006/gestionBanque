@@ -54,7 +54,7 @@ def saisir_date() -> datetime.date:
 
     Returns:
         datetime.date: La date correctement saisie et convertie.
-    """ 
+    """
     while True:
         saisie = input("Date de l'opération (jj/mm/aaaa): ")
         try:
