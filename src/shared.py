@@ -7,12 +7,12 @@
 #   |--------------------------------------------|   #
 # --Imports-- #
 import datetime
+import hashlib
 import os
 import shutil
-import hashlib
+
 from cryptage_decryptage import cryptage
 from import_donnees import import_idents
-
 
 # --Constantes-- #
 dict_ident = import_idents(chemin_fichier='./ident.txt')
@@ -66,14 +66,14 @@ def saisir_date() -> datetime.date:
 
 def enregistrement_modif(lst_cpt: list, lst_ope: list, lst_bud: list, identifiant: int, cle_cryptage: int) -> None:
     """
-    Enregistre les comptes, opérations et budgets de l'utilisateur dans son fichier personnel,
-    après les avoir formatés et chiffrés avec sa clé de cryptage.
+    Enregistre les données utilisateur (comptes, opérations, budgets) de manière sécurisée
+    avec chiffrement, hash et sauvegardes.
 
-    Les données sont :
-    - formatées ligne par ligne avec un préfixe (CPT, OPE, BUD),
-    - concaténées dans un seul bloc de texte,
-    - chiffrées avec la fonction cryptage,
-    - puis écrites dans le fichier de l'utilisateur.
+    Les fichiers temporaires et de sauvegarde sont stockés dans des sous-dossiers :
+        - ../users/temp/ pour les fichiers .tmp
+        - ../users/backup/ pour les fichiers .bak
+
+    Les dates des opérations sont enregistrées au format : dd/mm/YYYY
 
     Args:
         lst_cpt (list): Liste des comptes de l'utilisateur.
@@ -85,35 +85,47 @@ def enregistrement_modif(lst_cpt: list, lst_ope: list, lst_bud: list, identifian
     Returns:
         None
     """
-    chemin_original = f"../users/{identifiant}.txt"
-    chemin_temporaire = f"../users/{identifiant}.tmp"
-    chemin_backup = f"../users/{identifiant}.bak"
+    dossier_users = "../users"
+    dossier_temp = os.path.join(dossier_users, "temp")
+    dossier_backup = os.path.join(dossier_users, "backup")
+
+    os.makedirs(dossier_temp, exist_ok=True)
+    os.makedirs(dossier_backup, exist_ok=True)
+
+    chemin_original = os.path.join(dossier_users, f"{identifiant}.txt")
+    chemin_temporaire = os.path.join(dossier_temp, f"{identifiant}.tmp")
+    chemin_backup = os.path.join(dossier_backup, f"{identifiant}.bak")
 
     try:
-        # Construction du contenu texte
         lignes = []
+
         for compte in lst_cpt:
             lignes.append(f"CPT*{compte}")
+
         for operation in lst_ope:
-            # Cette ligne crée l'enregistrement de l'opération en extractant chacun des champs de la liste et
-            # en les séparant d'une *
-            lignes.append(f"OPE*{'*'.join(map(str, operation))}")
+            date_str = operation[0].strftime('%d/%m/%Y')
+
+            # Remplace la date (1er champ)
+            operation_str = '*'.join([date_str] + list(map(str, operation[1:])))
+            lignes.append(f"OPE*{operation_str}")
+
         for budget in lst_bud:
-            # Idem que pour les opérations
             lignes.append(f"BUD*{'*'.join(map(str, budget))}")
+
         contenu_en_clair = "\n".join(lignes)
 
-        # Calcul du hash SHA-256
+        # Ajout du hash
         hash_val = hashlib.sha256(contenu_en_clair.encode("utf-8")).hexdigest()
         contenu_complet = contenu_en_clair + f"\nHASH*{hash_val}"
-        # Chiffrement César
+
+        # Chiffrement
         texte_chiffre = cryptage(contenu_complet, cle_cryptage)
 
-        # Écriture dans le fichier temporaire
+        # Écriture dans un fichier temporaire
         with open(chemin_temporaire, "w", encoding="utf-8") as f:
             f.write(texte_chiffre)
 
-        # Sauvegarde de la version précédente
+        # Sauvegarde de l'ancien fichier
         if os.path.exists(chemin_original):
             shutil.copy(chemin_original, chemin_backup)
 

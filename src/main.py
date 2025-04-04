@@ -5,10 +5,10 @@
 #   |--Groupe 2 (MOUSSA, ASSEMAT, JIN, ZAMOURI)--|   #
 #   |--------------------------------------------|   #
 # --Imports-- #
-from identification import *
 from dashboard import *
-from gestion_comptes import gestion_comptes
 from gestion_budgets import gestion_budgets
+from gestion_comptes import gestion_comptes
+from identification import *
 
 
 # --Constantes-- #

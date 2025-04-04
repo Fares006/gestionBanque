@@ -5,8 +5,7 @@
 #   |-----Cryptage des fichiers utilisateurs-----|   #
 #   |--------------------------------------------|   #
 # --Imports-- #
-from cryptage_decryptage import cryptage, decryptage, CLE_CRYPTAGE
-from import_donnees import import_idents
+from cryptage_decryptage import cryptage, decryptage
 
 
 # --Constantes-- #

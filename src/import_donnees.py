@@ -7,6 +7,7 @@
 #   |--------------------------------------------|   #
 # --Imports-- #
 import datetime
+
 from cryptage_decryptage import CLE_CRYPTAGE, decryptage
 
 
@@ -103,6 +104,7 @@ def import_operations(chemin_fichier: str, cle: int) -> list:
             if ligne[:3] == 'OPE':
                 liste_intermediaire = ligne.strip('\n').split('*')
                 liste_intermediaire.pop(0)  # On se débarrasse de 'OPE'
+                print(ligne)
                 liste_intermediaire[0] = datetime.date(year=int(liste_intermediaire[0][6:]),
                                                        month=int(liste_intermediaire[0][3:5]),
                                                        day=int(liste_intermediaire[0][0:2]))

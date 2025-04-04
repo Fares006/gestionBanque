@@ -6,8 +6,8 @@
 #   |-----------Phase gestion de comptes---------|   #
 #   |--------------------------------------------|   #
 # --Imports-- #
-from import_donnees import *
 from comptes import *
+from import_donnees import *
 from shared import saisir_choix, enregistrement_modif, dict_ident
 
 
@@ -156,4 +156,3 @@ def gestion_comptes(identifiant: int) -> None:
 
         afficher_menu_g_comptes()
         choix = saisir_choix(valeurs_autorisees={0, 1, 2, 3, 4, 5})
-

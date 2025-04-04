@@ -6,7 +6,6 @@
 #   |------------Phase d'identification----------|   #
 #   |--------------------------------------------|   #
 # --Imports-- #
-from import_donnees import import_idents
 from shared import dict_ident
 
 # --Constantes-- #

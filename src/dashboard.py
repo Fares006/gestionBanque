@@ -6,8 +6,8 @@
 #   |---------------Fenêtre de bord--------------|   #
 #   |--------------------------------------------|   #
 # --Imports-- #
-from import_donnees import import_comptes, import_operations
 from comptes import calcul_dict_soldes, selection_compte
+from import_donnees import import_comptes, import_operations
 from shared import saisir_choix, dict_ident
 
 

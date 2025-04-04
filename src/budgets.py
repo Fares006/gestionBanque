@@ -56,7 +56,6 @@ def creation_budget(lst_cpt: list, lst_bud: list) -> list:
     Returns:
         list: Le budget créé, structuré sous forme de liste.
     """
-
     from comptes import selection_compte
     lst_bud_minuscule = [budget[0].casefold() for budget in lst_bud]
     libelle = input("Libellé du nouveau budget : ")

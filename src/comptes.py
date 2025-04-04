@@ -7,8 +7,9 @@
 #   |--------------------------------------------|   #
 # --Imports-- #
 import datetime
-from shared import saisir_choix, saisir_date
 from copy import copy
+
+from shared import saisir_choix, saisir_date
 
 
 # --Constantes-- #
@@ -238,7 +239,6 @@ def creer_virement(lst_cpt: list, dict_soldes: dict, is_nouveau_compte: bool = F
                 saisie_montant_valide = True
         except ValueError:
             print("Veuillez entrer un montant en € correct.")
-            saisie_montant = input("Montant en € : ")
 
     while montant > dict_soldes[compte_emetteur]:
         print(f"Il n'y a pas assez de provisions sur ce compte pour effectuer ce virement. "
@@ -253,7 +253,6 @@ def creer_virement(lst_cpt: list, dict_soldes: dict, is_nouveau_compte: bool = F
                     saisie_montant_valide = True
             except ValueError:
                 print("Veuillez entrer un montant en € correct.")
-                saisie_montant = input("Montant en € : ")
 
     virement = compte_emetteur, compte_benef, montant
     return virement
@@ -350,7 +349,7 @@ def afficher_operations(lst_ope: list, compte: str, filtre_date: bool = False) -
         limite = saisir_date()
         date_valide = False
         while not date_valide:
-            if plancher < limite:
+            if plancher <= limite:
                 date_valide = True
             else:
                 print("La date limite doit être inférieure ou égale à celle du début.")
