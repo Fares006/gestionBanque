@@ -44,6 +44,6 @@ def gestion_banque() -> None:
                 gestion_budgets(identifiant)
 
 
-# --Programme principal--
+# --Programme principal-- 
 if __name__ == "__main__":
     gestion_banque()
