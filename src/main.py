@@ -777,7 +777,9 @@ def identification() -> None:
             choix = int(input("Quelle fonctionnalité souhaitez-vous accéder ? : "))
 
 
-# --Programme principal--
+# --Programme principal-- testtt
 if __name__ == "__main__":
     dict_ident = import_idents(chemin_fichier='./ident.txt')
     identification()
+
+
