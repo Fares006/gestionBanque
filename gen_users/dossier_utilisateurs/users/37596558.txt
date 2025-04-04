@@ -1,0 +1,12 @@
+CPT*Compte A
+OPE*21/01/2022*vente*Compte A*94.38*VIR*True*sorties
+OPE*29/01/2022*cadeau*Compte A*-72.03*CHE*True*alimentation
+OPE*01/01/2022*vente*Compte A*194.18*CB*False*transport
+OPE*14/01/2022*revenu*Compte A*236.95*CHE*False*transport
+OPE*31/01/2022*revenu*Compte A*180.38*CHE*True*santé
+OPE*24/01/2022*vente*Compte A*288.67*CHE*False*divertissement
+BUD*Autres*0*Autres
+BUD*santé*500*Compte A
+BUD*sorties*1000*Compte A
+BUD*divertissement*200*Compte A
+BUD*divers*100*Compte A

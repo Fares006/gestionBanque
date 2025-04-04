@@ -1,0 +1,10 @@
+CPT*Compte A
+CPT*Compte B
+CPT*Compte C
+OPE*16/01/2022*pharmacie*Compte B*-75.2*CB*True*divers
+OPE*30/01/2022*restaurant*Compte A*-9.05*VIR*False*sorties
+OPE*09/01/2022*vente*Compte A*185.74*CB*True*transport
+OPE*15/01/2022*remboursement*Compte A*90.5*VIR*True*divers
+BUD*Autres*0*Autres
+BUD*divertissement*500*Compte A
+BUD*transport*1000*Compte C

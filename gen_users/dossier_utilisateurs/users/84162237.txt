@@ -1,0 +1,13 @@
+CPT*Compte A
+CPT*Compte B
+CPT*Compte C
+OPE*14/01/2022*remboursement*Compte B*70.69*VIR*False*santé
+OPE*23/01/2022*virement*Compte C*95.44*CHE*False*alimentation
+OPE*29/01/2022*courses*Compte B*-47.2*VIR*True*divertissement
+OPE*03/01/2022*essence*Compte C*-72.79*CHE*True*alimentation
+OPE*28/01/2022*cinema*Compte A*-57.5*CB*False*sorties
+BUD*Autres*0*Autres
+BUD*transport*500*Compte B
+BUD*sorties*100*Compte C
+BUD*alimentation*300*Compte B
+BUD*divertissement*300*Compte B

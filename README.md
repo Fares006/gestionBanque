@@ -49,25 +49,45 @@ Ce projet a été réalisé dans le cadre des cours de **M. Jérôme Delobelle**
 ## Structure du projet
 ```
 gestionBanque/
- |-- README.md                 # Documentation du projet
- |-- gestionBanque.iml         # Fichier de configuration du projet
- |-- misc.xml                  # Fichier de configuration supplémentaire
- |-- modules.xml               # Fichier de configuration des modules
- |-- vcs.xml                   # Fichier de configuration du contrôle de version
- |-- .gitignore                # Fichier pour ignorer des fichiers dans Git
- |-- idea/                     # Dossier de configuration d'IDEA
-     |-- inspectionProfiles/   
- |-- src/                      # Code source
-     |-- crypter_decrypter_fichier.py  # Script pour crypter et décrypter des fichiers
-     |-- ident.txt             # Fichier d'identification (crypté)
-     |-- ident_clair.txt       # Fichier d'identification (en clair)
-     |-- main.py               # Fichier principal du programme
- |-- users/                    # Dossiers contenant les comptes et budgets des utilisateurs (cryptés)
-     |-- 19283746.txt          # Fichier utilisateur
-     |-- 23456789.txt          # Fichier utilisateur
-     |-- 34567890.txt          # Fichier utilisateur
-     |-- 56789012.txt          # Fichier utilisateur
-     |-- 87654321.txt          # Fichier utilisateur
+│
+├── README.md                    # Documentation du projet
+├── gestionBanque.iml            # Fichier de configuration du projet
+├── misc.xml                     # Fichier de configuration supplémentaire
+├── modules.xml                  # Fichier de configuration des modules
+├── vcs.xml                      # Fichier de configuration du contrôle de version
+├── .gitignore                   # Fichier pour ignorer des fichiers dans Git
+│
+├── idea/                        # Dossier de configuration IntelliJ IDEA
+│   └── inspectionProfiles/
+│
+├── gen_users/                   # Scripts de génération des identifiants utilisateurs
+│   ├── gen_ident.py             # Génère les identifiants
+│   ├── gen_id_users.py          # Génère les fichiers utilisateurs
+│   └── dossier_utilisateurs/    # Contient les identifiants cryptés et fichiers utilisateurs
+│       ├── ident.txt            # Identifiants cryptés des utilisateurs
+│       └── _users/              # Fichiers utilisateurs générés (ex : 07272359.txt, etc.)
+│
+├── src/                         # Code source principal
+│   ├── budgets.py               # Gestion des budgets
+│   ├── comptes.py               # Gestion des comptes
+│   ├── cryptage_decryptage.py  # Fonctions de cryptage et décryptage
+│   ├── crypter_decrypter_fichier.py # Script de cryptage/décryptage de fichiers
+│   ├── dashboard.py             # Interface de tableau de bord
+│   ├── gestion_budgets.py       # Contrôleur pour la gestion des budgets
+│   ├── gestion_comptes.py       # Contrôleur pour la gestion des comptes
+│   ├── ident.txt                # Identifiants cryptés (copie possible pour test)
+│   ├── ident_clair.txt          # Identifiants en clair pour tests
+│   ├── identification.py        # Module de login/identification
+│   ├── import_donnees.py        # Import de données utilisateurs
+│   ├── main.py                  # Point d'entrée de l'application
+│   ├── main_gui.py              # Interface principale avec Tkinter
+│   └── shared.py                # Fonctions partagées
+│
+└── users/                       # Données utilisateurs cryptées (réel ou test)
+    ├── 07272359.txt
+    ├── 12720138.txt
+    ├── ...
+    └── 96578654.txt
 ```
 
 ## Évolutions prévues
@@ -76,6 +96,7 @@ gestionBanque/
 - Amélioration de la sécurité du stockage des données.
 - Ajout de la visualisation graphique des budgets.
 - Documentation plus détaillée et exemples d'utilisation.
+- Rapport complet et détaillé.
 
 ## Licence
 Projet réalisé à des fins académiques. Toute utilisation externe doit être validée par l'Université Paris Cité.

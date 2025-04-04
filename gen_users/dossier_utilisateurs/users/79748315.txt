@@ -1,0 +1,15 @@
+CPT*Compte A
+CPT*Compte B
+CPT*Compte C
+OPE*16/01/2022*revenu*Compte A*180.21*VIR*True*transport
+OPE*08/01/2022*pharmacie*Compte B*-58.6*CHE*False*divertissement
+OPE*08/01/2022*vente*Compte A*203.17*VIR*False*sorties
+OPE*02/01/2022*virement*Compte A*105.84*CB*False*sorties
+OPE*14/01/2022*prime*Compte A*213.47*CHE*True*santé
+OPE*02/01/2022*remboursement*Compte A*173.31*VIR*False*divertissement
+OPE*29/01/2022*courses*Compte C*-92.51*CHE*True*transport
+OPE*09/01/2022*revenu*Compte C*206.65*VIR*True*divertissement
+BUD*Autres*0*Autres
+BUD*santé*500*Compte A
+BUD*alimentation*500*Compte B
+BUD*transport*300*Compte A

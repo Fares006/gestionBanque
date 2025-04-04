@@ -1,0 +1,19 @@
+CPT*Compte A
+OPE*04/01/2022*courses*Compte A*-90.96*CB*False*sorties
+OPE*19/01/2022*revenu*Compte A*184.13*VIR*True*divers
+OPE*31/01/2022*revenu*Compte A*122.73*VIR*True*alimentation
+OPE*27/01/2022*prime*Compte A*56.13*CB*False*alimentation
+OPE*05/01/2022*revenu*Compte A*231.91*CB*True*divers
+OPE*18/01/2022*restaurant*Compte A*-5.5*VIR*True*sorties
+OPE*03/01/2022*revenu*Compte A*246.73*CB*True*sorties
+OPE*21/01/2022*pharmacie*Compte A*-78.4*CHE*False*santé
+OPE*08/01/2022*prime*Compte A*221.59*CB*False*transport
+OPE*16/01/2022*courses*Compte A*-97.08*CHE*False*alimentation
+OPE*08/01/2022*vente*Compte A*192.77*CB*False*sorties
+OPE*15/01/2022*cinema*Compte A*-35.23*CHE*True*sorties
+OPE*05/01/2022*virement*Compte A*299.74*CHE*False*sorties
+OPE*14/01/2022*restaurant*Compte A*-44.76*VIR*True*divers
+OPE*18/01/2022*pharmacie*Compte A*-95.89*CB*False*santé
+OPE*18/01/2022*essence*Compte A*-53.39*CHE*False*santé
+BUD*Autres*0*Autres
+BUD*transport*1000*Compte A
