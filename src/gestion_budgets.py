@@ -25,7 +25,14 @@ except locale.Error:
 # --Fonctions-- #
 def afficher_menu_g_budgets() -> None:
     """
-    Affiche le menu pour la gestion des budgets.
+    Affiche en console le menu des actions disponibles dans la gestion des budgets.
+
+    Le menu propose à l'utilisateur les options suivantes :
+        0. Revenir en arrière
+        1. Afficher les budgets existants
+        2. Ajouter un nouveau budget
+        3. Modifier un budget existant
+        4. Afficher la différence entre les dépenses et le budget
 
     Returns:
         None
@@ -42,17 +49,17 @@ def gestion_budgets(identifiant: int) -> None:
     """
     Gère toutes les interactions liées à la gestion des budgets de l'utilisateur connecté.
 
-    Cette fonction permet à l'utilisateur de :
-    - Visualiser tous ses budgets enregistrés
-    - Ajouter un nouveau budget en lien avec un compte
-    - Modifier un budget existant (libellé, montant ou compte associé)
-    - Consulter un rapport de dépenses mensuelles pour un budget donné
+    Cette fonction propose un menu interactif permettant à l'utilisateur de :
+    - Visualiser ses budgets existants
+    - Ajouter un nouveau budget lié à un compte
+    - Modifier un budget existant (libellé, montant, compte)
+    - Consulter un rapport mensuel des dépenses pour un budget donné
 
-    Chaque action est répétable via un système de boucles interactives.
-    Les données modifiées sont automatiquement sauvegardées après chaque opération.
+    Chaque action est répétable via des boucles interactives.
+    Toutes les modifications sont automatiquement sauvegardées dans le fichier utilisateur (avec chiffrement).
 
     Args:
-        identifiant (int): L'identifiant de l'utilisateur actuellement connecté.
+        identifiant (int): Identifiant de l'utilisateur connecté (utilisé pour accéder à ses données personnelles).
 
     Returns:
         None
@@ -67,6 +74,7 @@ def gestion_budgets(identifiant: int) -> None:
     choix = saisir_choix(valeurs_autorisees={0, 1, 2, 3, 4})
 
     while choix != 0:
+        # Boucle de navigation principale (choix utilisateur)
         match choix:
             case 1:  # Afficher les budgets
                 print(f"|-----Affichage des budgets de {nom} -----|")

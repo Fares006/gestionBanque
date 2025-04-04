@@ -18,16 +18,17 @@ dict_ident = import_idents(chemin_fichier='./ident.txt')
 # --Fonctions-- #
 def saisir_choix(valeurs_autorisees: set) -> int:
     """
-    Demande à l'utilisateur de saisir un entier parmi un ensemble de valeurs autorisées.
+    Invite l'utilisateur à saisir un entier appartenant à un ensemble de valeurs autorisées.
 
-    La fonction continue de demander une saisie tant que l'utilisateur n'entre pas
-    un entier valide appartenant à l'ensemble spécifié.
+    La saisie est répétée tant que l'utilisateur n'entre pas un entier valide
+    faisant partie de l'ensemble spécifié. Cette fonction garantit que le retour
+    est toujours une valeur autorisée.
 
     Args:
-        valeurs_autorisees (set): Un ensemble d'entiers représentant les choix valides.
+        valeurs_autorisees (set): Ensemble d'entiers représentant les choix valides autorisés.
 
     Returns:
-        int: Le choix validé de l'utilisateur parmi les valeurs autorisées.
+        int: L'entier saisi par l'utilisateur et validé comme faisant partie des valeurs autorisées.
     """
     while True:
         try:
@@ -43,12 +44,14 @@ def saisir_choix(valeurs_autorisees: set) -> int:
 
 def saisir_date() -> datetime.date:
     """
-    Demande à l'utilisateur de saisir une date au format jj/mm/aaaa
-    et la retourne sous forme d'objet datetime.date.
+    Invite l'utilisateur à saisir une date au format jj/mm/aaaa,
+    et renvoie cette date sous forme d'objet datetime.date.
+
+    La saisie est répétée tant que le format n'est pas valide.
 
     Returns:
-        datetime.date: La date saisie par l'utilisateur.
-    """
+        datetime.date: La date correctement saisie et convertie.
+    """ 
     while True:
         saisie = input("Date de l'opération (jj/mm/aaaa): ")
         try:
@@ -60,14 +63,21 @@ def saisir_date() -> datetime.date:
 
 def enregistrement_modif(lst_cpt: list, lst_ope: list, lst_bud: list, identifiant: int, cle_cryptage: int) -> None:
     """
-    Enregistre les modifications effectuées au fichier de l'utilisateur
+    Enregistre les comptes, opérations et budgets de l'utilisateur dans son fichier personnel,
+    après les avoir formatés et chiffrés avec sa clé de cryptage.
+
+    Les données sont :
+    - formatées ligne par ligne avec un préfixe (CPT, OPE, BUD),
+    - concaténées dans un seul bloc de texte,
+    - chiffrées avec la fonction cryptage,
+    - puis écrites dans le fichier de l'utilisateur.
 
     Args:
-        lst_cpt (list): liste des comptes de l'utilisateur.
-        lst_ope (list): liste des opérations de l'utilisateur.
-        lst_bud (list): liste des budgets de l'utilisateur.
-        identifiant (str): identifiant de l'utilisateur.
-        cle_cryptage (int): clé de cryptage unique à l'utilisateur.
+        lst_cpt (list): Liste des comptes de l'utilisateur.
+        lst_ope (list): Liste des opérations (tuples) de l'utilisateur.
+        lst_bud (list): Liste des budgets (listes) de l'utilisateur.
+        identifiant (int): Identifiant de l'utilisateur (utilisé pour nommer le fichier).
+        cle_cryptage (int): Clé de cryptage utilisée pour sécuriser les données.
 
     Returns:
         None

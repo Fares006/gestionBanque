@@ -14,15 +14,18 @@ from import_donnees import import_idents
 # --Fonctions-- #
 def import_idents_clair(chemin_fichier: str) -> dict:
     """
-    Importe le contenu du fichier ident.txt et renvoie une liste qui contient :
-    l'identifiant, le mot de passe, le nom et la clé de cryptage du fichier de l'utilisateur.
+    Importe le contenu d'un fichier d'identifiants non crypté (format texte clair)
+    et retourne un dictionnaire associant chaque identifiant à ses informations.
+
+    Chaque ligne du fichier doit être au format :
+        identifiant*mot_de_passe*nom_utilisateur*cle_cryptage
 
     Args:
-        chemin_fichier (str): le chemin relatif du fichier ident.txt
-        cle (int): clé de cryptage du fichier (en dur)
+        chemin_fichier (str): Chemin relatif ou absolu vers le fichier ident_clair.txt
 
     Returns:
-        dict: le dictionnaire des identifiants (et informations associées dans une liste)
+        dict: Un dictionnaire dont les clés sont les identifiants (str) et les valeurs des listes :
+              [mot_de_passe (str), nom (str), cle_cryptage (int)]
     """
     # Ouverture du fichier et initialisation des variables nécessaires
     dic_ident_clair = dict()
@@ -38,44 +41,56 @@ def import_idents_clair(chemin_fichier: str) -> dict:
 
 def crypter_fichier(path: str, cle: int) -> None:
     """
-    Procédure qui modifie un fichier pour le crypter
+    Crypte le contenu d'un fichier texte à l'aide du chiffrement de César, en écrasant le fichier original.
+
+    Chaque caractère du fichier (sauf '\n' et '*', selon la fonction cryptage) est transformé
+    en utilisant la clé fournie. Le fichier est ensuite réécrit avec son contenu crypté.
 
     Args:
-        path: le chemin absolu du fichier
-        cle: clé de cryptage
+        path (str): Le chemin absolu (ou relatif) vers le fichier à crypter.
+        cle (int): La clé de cryptage (valeur entière de décalage).
+
+    Returns:
+        None
     """
     resultat = ''
-    fichier = open(file=path, mode='r', encoding='utf-8')
-    ligne = fichier.readline()
-    while ligne != '':
-        for char in ligne:
-            resultat += cryptage(chaine=char, cle=cle)
+    with open(file=path, mode='r', encoding='utf-8') as fichier:
         ligne = fichier.readline()
-    fichier.close()
-    fichier = open(file=path, mode='w', encoding='utf-8')
-    fichier.write(resultat)
-    fichier.close()
+        while ligne != '':
+            for char in ligne:
+                resultat += cryptage(chaine=char, cle=cle)
+            ligne = fichier.readline()
+
+    with open(file=path, mode='w', encoding='utf-8') as fichier:
+        fichier.write(resultat)
 
 
 def decrypter_fichier(path: str, cle: int = 0) -> None:
     """
-    Procédure qui modifie un fichier pour le décrypter
+    Décrypte le contenu d’un fichier texte à l’aide du chiffrement de César,
+    en écrasant le fichier original.
+
+    Chaque caractère du fichier (sauf '\n' et '*', selon la fonction decryptage)
+    est transformé en soustrayant la clé fournie. Le fichier est ensuite réécrit
+    avec son contenu décrypté.
 
     Args:
-        path: le chemin absolu du fichier
-        cle: clé de cryptage
+        path (str): Chemin absolu (ou relatif) vers le fichier à décrypter.
+        cle (int): Clé de décryptage (valeur entière du décalage inverse à appliquer). Par défaut : 0.
+
+    Returns:
+        None
     """
     resultat = ''
-    fichier = open(file=path, mode='r', encoding='utf-8')
-    ligne = fichier.readline()
-    while ligne != '':
-        for char in ligne:
-            resultat += decryptage(chaine=char, cle=cle)
+    with open(file=path, mode='r', encoding='utf-8') as fichier:
         ligne = fichier.readline()
-    fichier.close()
-    fichier = open(file=path, mode='w', encoding='utf-8')
-    fichier.write(resultat)
-    fichier.close()
+        while ligne != '':
+            for char in ligne:
+                resultat += decryptage(chaine=char, cle=cle)
+            ligne = fichier.readline()
+
+    with open(file=path, mode='w', encoding='utf-8') as fichier:
+        fichier.write(resultat)
 
 
 # --Programme principal-- #

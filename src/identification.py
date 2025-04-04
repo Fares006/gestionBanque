@@ -15,12 +15,17 @@ from shared import dict_ident
 # --Fonctions-- #
 def get_identifiant() -> str:
     """
-    Permet à l'utilisateur de saisir son identifiant.
+    Demande à l'utilisateur de saisir un identifiant valide.
 
-    Args:
+    L'utilisateur dispose de 5 tentatives maximum pour entrer un identifiant :
+    - L'identifiant doit comporter exactement 8 caractères.
+    - Il doit être présent dans le dictionnaire global dict_ident.
+
+    Si un identifiant valide est saisi, il est retourné immédiatement.
+    Sinon, une chaîne vide est renvoyée après épuisement des essais.
 
     Returns:
-        str: renvoie l'identifiant de l'utilisateur validé
+        str: L'identifiant saisi et validé, ou une chaîne vide en cas d'échec.
     """
     identifiant_trouve = False
     nb_essais = 0
@@ -38,13 +43,20 @@ def get_identifiant() -> str:
 
 def get_mdp(identifiant: str) -> str:
     """
-    Permet à l'utilisateur de saisir son mot de passe.
+    Demande à l'utilisateur de saisir son mot de passe associé à l'identifiant donné.
+
+    L'utilisateur dispose de 5 tentatives maximum pour entrer un mot de passe valide :
+    - Le mot de passe doit comporter exactement 6 caractères.
+    - Il doit correspondre à celui enregistré dans dict_ident pour l'identifiant fourni.
+
+    Si le mot de passe est correct, il est retourné.
+    En cas d'échec après 5 essais, une chaîne vide est renvoyée.
 
     Args:
-        identifiant (str): l'id de l'utilisateur validé (acquis par la fonction get_identifiant())
+        identifiant (str): L'identifiant utilisateur déjà validé (obtenu via get_identifiant).
 
     Returns:
-        str: renvoie le mot de passe de l'utilisateur validé
+        str: Le mot de passe saisi et validé, ou une chaîne vide en cas d'échec.
     """
     connecte = False
     nb_essais = 0
@@ -62,12 +74,18 @@ def get_mdp(identifiant: str) -> str:
 
 def identification() -> tuple:
     """
-    Permet la connexion d'un utilisateur en utilisant le couple identifiant mot de passe.
+    Gère le processus de connexion d'un utilisateur à partir de son identifiant et de son mot de passe.
 
-    Args:
+    La fonction appelle successivement :
+    - get_identifiant() pour valider l'identifiant saisi.
+    - get_mdp() pour valider le mot de passe associé à l'identifiant.
+
+    L'utilisateur dispose de 5 tentatives pour chaque étape. En cas de réussite, la connexion est approuvée.
 
     Returns:
-        tuple: composé de l'approbation ou non de la connexion ainsi que l'identifiant saisi.
+        tuple:
+            - bool : True si l'identification est réussie, False sinon.
+            - str  : L'identifiant saisi (vide si l'utilisateur échoue à s'identifier).
     """
     identifiant = get_identifiant()
     if identifiant != '':
@@ -78,5 +96,3 @@ def identification() -> tuple:
 
 
 # --Programme principal--
-if __name__ == "__main__":
-    dict_ident = import_idents(chemin_fichier='./ident.txt')

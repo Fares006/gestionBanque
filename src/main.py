@@ -16,17 +16,25 @@ from gestion_budgets import gestion_budgets
 # --Fonctions-- #
 def gestion_banque() -> None:
     """
-    Fonction qui gère le comportement du logiciel, en fonction des entrées de l'utilisateur.
+    Gère l'exécution principale de l'application après l'authentification de l'utilisateur.
 
-    Args:
+    Cette fonction :
+    - Vérifie les identifiants de connexion via la fonction identification()
+    - Affiche un tableau de bord avec le solde courant
+    - Permet de naviguer entre deux grandes fonctionnalités :
+        1. Gestion des comptes
+        2. Gestion des budgets
+
+    L'utilisateur reste dans une boucle tant qu'il ne choisit pas de se déconnecter.
+    Chaque action est redirigée vers le module concerné (comptes ou budgets).
 
     Returns:
         None
     """
-    login_state = identification()
-    identifiant = login_state[1]
-    while login_state[0]:
+    connexion_valide, identifiant = identification()
+    while connexion_valide:
         choix_phase = fenetre_bord(identifiant)
+        # Boucle de navigation principale (choix utilisateur)
         match choix_phase:
             case 0:     # Déconnexion
                 return gestion_banque()

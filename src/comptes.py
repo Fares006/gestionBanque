@@ -15,15 +15,19 @@ from shared import saisir_choix, saisir_date
 # --Fonctions-- #
 def selection_compte(lst_cpt: list, courant: bool = True) -> str:
     """
-    Interface qui permet de sélectionner un compte parmi ceux qui sont présents sur
-    le compte bancaire d'un utilisateur, pour diverses utilisations.
+    Permet à l'utilisateur de sélectionner un compte parmi ceux disponibles.
+
+    Par défaut, la fonction retourne automatiquement le premier compte de la liste (souvent "Compte A"),
+    sauf si courant=False, auquel cas une interface console est affichée pour que l'utilisateur choisisse
+    manuellement un compte dans la liste.
 
     Args:
-        lst_cpt (list): contient la liste des comptes de l'utilisateur
-        courant (bool): valeur True par défaut qui indique que le compte par défaut est le compte courant (compte A)
+        lst_cpt (list): Liste des comptes de l'utilisateur (ex. ["Compte A", "Compte B"]).
+        courant (bool): Si True (par défaut), sélectionne automatiquement le premier compte. 
+                        Si False, propose à l'utilisateur de choisir un compte manuellement.
 
     Returns:
-        str: le nom du compte
+        str: Le nom du compte sélectionné par l'utilisateur.
     """
     choix = 0
     nb_comptes = len(lst_cpt)
@@ -39,33 +43,43 @@ def selection_compte(lst_cpt: list, courant: bool = True) -> str:
 
 def calcul_solde(lst_ope: list, compte: str) -> float:
     """
-    Calcule le solde d'un utilisateur grâce à la liste des opérations associées au compte.
+    Calcule le solde actuel d’un compte donné à partir de la liste des opérations.
+
+    Seules les opérations :
+    - associées au compte spécifié
+    - et marquées comme "passées" (état True)
+
+    sont prises en compte dans le calcul du solde.
 
     Args:
-        lst_ope (list): liste des opérations
-        compte (str): le nom du compte
+        lst_ope (list): Liste des opérations sous forme de tuples
+                        (date, libellé, compte, montant, mode_paiement, état, budget).
+        compte (str): Nom du compte dont on souhaite calculer le solde.
 
     Returns:
-        float: le montant présent sur le compte
+        float: Solde total du compte (somme des montants des opérations passées).
     """
     solde = 0
     for ope in lst_ope:
         # ope[2] représente la case contenant le compte associé à une opération donnée.
-        if ope[2] == compte:
+        if ope[2] == compte and ope[5] is True:
             solde += ope[3]  # ope[3] correspond au montant (+/-) de l'opération.
     return solde
 
 
 def ajout_compte(lst_cpt: list, nom: str) -> bool:
     """
-    Ajoute un compte de type livret d'épargne, etc. à la liste des comptes de l'utilisateur prise en paramètre.
+    Ajoute un nouveau compte (ex : livret, épargne, etc.) à la liste des comptes de l'utilisateur,
+    à condition qu'il n'existe pas déjà (vérification insensible à la casse).
+
+    Si le compte est ajouté, il est automatiquement capitalisé (première lettre en majuscule).
 
     Args:
-        lst_cpt (list): liste des comptes de l'utilisateur.
-        nom (str): le nom du nouveau compte.
+        lst_cpt (list): Liste existante des comptes de l'utilisateur.
+        nom (str): Nom du nouveau compte à ajouter.
 
     Returns:
-        bool: booléen qui indique si oui ou non le compte a été ajouté
+        bool: True si le compte a été ajouté avec succès, False s'il existait déjà.
     """
     lst_cpt_minuscule = [compte.casefold() for compte in lst_cpt]
     if nom.casefold() in lst_cpt_minuscule:
@@ -79,15 +93,27 @@ def ajout_compte(lst_cpt: list, nom: str) -> bool:
 
 def creation_operation(lst_cpt: list, lst_bud: list) -> tuple:
     """
-    Crée le tuple d'une opération suite à l'entrée de l'utilisateur.
+    Crée une opération bancaire à partir des saisies utilisateur, 
+    et la retourne sous forme de tuple structuré.
+
+    Les informations demandées sont :
+        - date de l'opération (via saisir_date)
+        - libellé de l'opération
+        - compte concerné (choisi dans la liste lst_cpt)
+        - montant (float, positif ou négatif)
+        - mode de paiement (CB, CHE, VIR, etc.)
+        - état de l'opération (passée ou non)
+        - budget associé (sélectionné dans lst_bud)
 
     Args:
-        lst_cpt (list): liste des comptes de l'utilisateur.
-        lst_bud (list): liste des budgets de l'utilisateur.
+        lst_cpt (list): Liste des comptes disponibles pour l'utilisateur.
+        lst_bud (list): Liste des budgets définis par l'utilisateur.
 
     Returns:
-        tuple: l'opération sous forme de tuple
+        tuple: Un tuple contenant toutes les informations de l'opération sous la forme :
+            (date, libellé, compte, montant, mode_paiement, état, budget)
     """
+
     from budgets import selection_budget
 
     date_op = saisir_date()
@@ -125,11 +151,14 @@ def creation_operation(lst_cpt: list, lst_bud: list) -> tuple:
 
 def ajout_operation(lst_ope: list, operation: tuple) -> None:
     """
-    Ajoute une opération (tuple) à la liste des opérations de l'utilisateur, prise en paramètre.
+    Ajoute une opération bancaire à la liste des opérations existantes de l'utilisateur.
+
+    L'opération est représentée par un tuple structuré contenant :
+        (date, libellé, compte, montant, mode_paiement, état, budget)
 
     Args:
-        lst_ope (list): la liste des opérations à laquelle on vient ajouter la nouvelle opération.
-        operation (tuple): le tuple contenant les informations relatives à une opération (date, libellé, etc.)
+        lst_ope (list): Liste actuelle des opérations de l'utilisateur.
+        operation (tuple): Tuple représentant une opération à ajouter à la liste.
 
     Returns:
         None
@@ -139,18 +168,26 @@ def ajout_operation(lst_ope: list, operation: tuple) -> None:
 
 def creer_virement(lst_cpt: list, dict_soldes: dict) -> tuple:
     """
-    Interface pour créer le virement, sous forme de tuple, afin de l'exécuter à l'aide de ajout_virement()
+    Interface utilisateur permettant de créer un virement entre deux comptes.
+
+    La fonction vérifie que :
+    - Le compte émetteur dispose d’un solde suffisant
+    - Le compte bénéficiaire est différent du compte émetteur
+    - Le montant saisi est valide et disponible
+
+    Elle retourne un tuple contenant les informations nécessaires pour effectuer le virement via ajout_virement().
 
     Args:
-        lst_cpt (list): liste des comptes de l'utilisateur.
-        dict_soldes (dict): dictionnaire des soldes de chaque compte de l'utilisateur.
+        lst_cpt (list): Liste des comptes de l'utilisateur.
+        dict_soldes (dict): Dictionnaire des soldes de chaque compte de l'utilisateur.
 
     Returns:
-        tuple: le virement prêt à être exécuté.
+        tuple: Le virement sous forme (compte_emetteur, compte_beneficiaire, montant)
     """
     print("Sélectionnez le compte émetteur : ")
     compte_emetteur = selection_compte(lst_cpt, courant=False)
     solde_emetteur = dict_soldes[compte_emetteur]
+    # Vérifie que le solde du compte émetteur permet un virement
     while solde_emetteur <= 0:
         print(f"Le solde de ce compte ({solde_emetteur:.2f} €) ne permet pas de faire un virement. "
               f"Veuillez choisir un autre compte émetteur.")
@@ -159,6 +196,7 @@ def creer_virement(lst_cpt: list, dict_soldes: dict) -> tuple:
 
     print("Sélectionnez le compte bénéficiaire : ")
     compte_benef = selection_compte(lst_cpt, courant=False)
+    # Vérifie que les comptes source et destination sont différents
     while compte_emetteur == compte_benef:
         print("Le compte émetteur doit être différent du compte bénéficiaire.")
         compte_benef = selection_compte(lst_cpt, courant=False)
@@ -166,7 +204,7 @@ def creer_virement(lst_cpt: list, dict_soldes: dict) -> tuple:
     saisie_montant = input(f"Saisissez le montant du virement à effectuer "
                            f"(solde : {solde_emetteur:.2f} €) : ")
     saisie_montant_valide = False
-    while not saisie_montant_valide:
+    while not saisie_montant_valide:    # Redemande un montant tant que celui-ci est invalide ou supérieur au solde
         try:
             montant = float(saisie_montant)
             if montant > 0:
@@ -196,16 +234,23 @@ def creer_virement(lst_cpt: list, dict_soldes: dict) -> tuple:
 
 def ajout_virement(virement: tuple, lst_ope: list, dict_soldes: dict) -> None:
     """
-    Effectue les modifications nécessaires aux structures pour l'exécution d'un virement d'un compte à un autre.
+    Effectue un virement entre deux comptes en mettant à jour :
+    - la liste des opérations (ajout débit/crédit)
+    - le dictionnaire des soldes (mise à jour des montants)
+
+    Deux opérations sont créées :
+        - Une pour le compte émetteur (montant négatif)
+        - Une pour le compte bénéficiaire (montant positif)
 
     Args:
-        virement (tuple): tuple qui contient compte_emetteur, compte_benef, montant
-        lst_ope (list): liste des opérations de l'utilisateur
-        dict_soldes (dict): dictionnaire avec les soldes de chaque compte de l'utilisateur.
+        virement (tuple): Tuple contenant (compte_emetteur (str), compte_beneficiaire (str), montant (float))
+        lst_ope (list): Liste des opérations de l'utilisateur à mettre à jour.
+        dict_soldes (dict): Dictionnaire des soldes des comptes de l'utilisateur.
 
     Returns:
         None
     """
+    # Crée une opération de débit pour le compte émetteur
     ope_emetteur = (datetime.date.today(),
                     f"Virement - émetteur",
                     virement[0],  # Compte émetteur
@@ -213,6 +258,7 @@ def ajout_virement(virement: tuple, lst_ope: list, dict_soldes: dict) -> None:
                     "VIR",
                     True,
                     "...")
+    # Crée une opération de crédit pour le compte bénéficiaire
     ope_benef = (datetime.date.today(),
                  f"Virement - bénéficiaire",
                  virement[1],  # Compte émetteur
@@ -224,21 +270,30 @@ def ajout_virement(virement: tuple, lst_ope: list, dict_soldes: dict) -> None:
     ajout_operation(lst_ope, operation=ope_emetteur)
     ajout_operation(lst_ope, operation=ope_benef)
 
+    # Met à jour les soldes des deux comptes
     dict_soldes[virement[0]] -= virement[2]
     dict_soldes[virement[1]] += virement[2]
 
 
 def calcul_dict_soldes(lst_cpt, lst_ope) -> dict:
     """
-    Crée un dictionnaire contenant, pour chaque compte, son solde associé
+    Calcule le solde de chaque compte de l'utilisateur et retourne un dictionnaire associant
+    chaque compte à son solde.
+
+    La fonction initialise le solde de chaque compte à 0, puis parcourt la liste des opérations
+    pour additionner (ou soustraire) le montant de chaque opération au compte correspondant.
+    On suppose que chaque opération est représentée par un tuple dont :
+        - l'indice 2 correspond au nom du compte,
+        - l'indice 3 correspond au montant de l'opération (positif ou négatif).
 
     Args:
-        lst_cpt (list): liste des comptes de l'utilisateur.
-        lst_ope (list): liste des opérations de l'utilisateur.
+        lst_cpt (list): Liste des comptes de l'utilisateur.
+        lst_ope (list): Liste des opérations de l'utilisateur.
 
     Returns:
-        dict: le dictionnaire {compte1 : solde1, ...}
+        dict: Un dictionnaire où chaque clé est le nom d'un compte et chaque valeur est son solde (float).
     """
+
     dict_soldes = dict(zip(lst_cpt, [0 for _ in lst_cpt]))
     for ope in lst_ope:
         dict_soldes[ope[2]] = dict_soldes.get(ope[2], 0) + ope[3]
@@ -247,12 +302,16 @@ def calcul_dict_soldes(lst_cpt, lst_ope) -> dict:
 
 def afficher_operations(lst_ope: list, compte: str, filtre_date: bool = False) -> None:
     """
-    Affiche les opérations de l'utilisateur, en fonction d'un compte et, si précisé, filtré selon une période.
+    Affiche les opérations associées à un compte spécifique, avec ou sans filtrage par date.
+
+    Si filtre_date est True, l'utilisateur est invité à saisir une période (date de début et date de fin).
+    Seules les opérations comprises dans cette plage seront affichées.
+    Si filtre_date est False, toutes les opérations du compte spécifié sont affichées sans restriction.
 
     Args:
-        lst_ope: liste des opérations de l'utilisateur
-        compte: le nom du compte
-        filtre_date: boolén pour savoir si l'on doit filtrer (filtre_date == True) par la date ou non
+        lst_ope (list): Liste des opérations de l'utilisateur.
+        compte (str): Nom du compte dont on souhaite afficher les opérations.
+        filtre_date (bool, optional): Si True, filtre les opérations par date. Sinon, affiche toutes les opérations.
 
     Returns:
         None
@@ -280,29 +339,33 @@ def afficher_operations(lst_ope: list, compte: str, filtre_date: bool = False) -
 
 def formatter_operation(operation: tuple) -> str:
     """
-    Formate une opération bancaire sous forme de chaîne lisible pour l'affichage.
+    Formate une opération bancaire sous forme de chaîne lisible pour affichage.
+
+    Cette fonction transforme les données d'une opération stockée sous forme de tuple
+    en une chaîne structurée contenant tous les champs pertinents.
 
     Args:
-        operation (tuple): Une opération représentée par un tuple contenant :
-            - date (datetime.date)
-            - libellé (str)
-            - compte (str)
-            - montant (float)
-            - mode de paiement (str)
-            - état de validation (bool)
-            - budget associé (str)
+        operation (tuple): Une opération représentée par :
+            - date (datetime.date) : Date de l'opération
+            - libellé (str) : Description de l'opération
+            - compte (str) : Nom du compte concerné
+            - montant (float) : Montant (positif ou négatif)
+            - mode de paiement (str) : CB, VIR, CHE, etc.
+            - état (bool) : True si l'opération est passée, False sinon
+            - budget (str) : Libellé du budget associé
 
     Returns:
-        str: Une chaîne formatée décrivant l'opération de manière claire.
+        str: Chaîne formatée et lisible représentant l'opération.
     """
     etat_str = "Passée" if operation[5] else "En attente"
-    affichage = (f"| Date : {operation[0].strftime("%d/%m/%Y")} - "
+    affichage = (f"| Date : {operation[0].strftime('%d/%m/%Y')} - "
                  f"Libellé : {operation[1]} - "
                  f"Compte : {operation[2]} - "
                  f"Montant : {operation[3]:.2f} € - "
                  f"Mode de paiement : {operation[4]} - "
-                 f"Etat : {etat_str} - "
+                 f"État : {etat_str} - "
                  f"Budget : {operation[6]} |")
     return affichage
+
 
 # --Programme principal--

@@ -14,14 +14,18 @@ from shared import saisir_choix
 # --Fonctions-- #
 def selection_budget(lst_bud: list) -> list:
     """
-    Interface qui permet de sélectionner un budget parmi ceux qui sont présents sur
-    le compte bancaire d'un utilisateur, pour diverses utilisations.
+    Permet à l'utilisateur de sélectionner un budget parmi ceux enregistrés.
+
+    Affiche en console une liste numérotée des budgets disponibles (par leur libellé).
+    L'utilisateur saisit un choix valide, et la fonction retourne l'entrée correspondante
+    dans la liste lst_bud.
 
     Args:
-        lst_bud (list): contient la liste des budgets
+        lst_bud (list): Liste des budgets de l'utilisateur, chaque budget étant représenté par une liste
+                        [libellé (str), montant (float), compte associé (str)].
 
     Returns:
-        list: la list qui représente le budget
+        list: Le budget sélectionné (sous forme de liste) parmi ceux de lst_bud.
     """
     nb_budgets = len(lst_bud)
     print("Faites le choix du budget : ")
@@ -35,15 +39,24 @@ def selection_budget(lst_bud: list) -> list:
 
 def creation_budget(lst_cpt: list, lst_bud: list) -> list:
     """
-    Crée la liste contenant les informations relatives à un budget, d'après l'entrée de l'utilisateur
+    Crée un nouveau budget à partir des saisies utilisateur, et le retourne sous forme de liste.
+
+    La fonction demande :
+    - un libellé unique (non présent dans lst_bud)
+    - un montant strictement positif (float)
+    - un compte associé (choisi dans lst_cpt)
+
+    Le budget est retourné sous la forme :
+        [libellé (str), montant (float), compte associé (str)]
 
     Args:
-        lst_cpt (list): liste des comptes de l'utilisateur.
-        lst_bud (list): liste des budgets de l'utilisateur.
+        lst_cpt (list): Liste des comptes de l'utilisateur.
+        lst_bud (list): Liste des budgets existants (pour éviter les doublons de nom).
 
     Returns:
-        list: le budget sous forme de liste
+        list: Le budget créé, structuré sous forme de liste.
     """
+
     from comptes import selection_compte
     lst_bud_minuscule = [budget[0].casefold() for budget in lst_bud]
     libelle = input("Libellé du nouveau budget : ")
@@ -68,11 +81,15 @@ def creation_budget(lst_cpt: list, lst_bud: list) -> list:
 
 def ajout_budget(lst_bud: list, budget: list) -> None:
     """
-    Ajoute un budget à la liste des budgets de l'utilisateur
+    Ajoute un budget à la liste des budgets existants de l'utilisateur,
+    et affiche un message de confirmation.
+
+    Le budget ajouté doit être une liste contenant :
+        [libellé (str), montant (float), compte associé (str)]
 
     Args:
-        lst_bud (list): la liste des budgets à laquelle nous ajoutons le nouveau budget
-        budget (list): le nouveau budget
+        lst_bud (list): Liste des budgets de l'utilisateur.
+        budget (list): Le budget à ajouter (sous forme de liste).
 
     Returns:
         None
@@ -83,11 +100,18 @@ def ajout_budget(lst_bud: list, budget: list) -> None:
 
 def modifier_budget(lst_bud: list, lst_cpt: list) -> None:
     """
-    Modifie un budget avec les informations souhaitées.
+    Permet à l'utilisateur de modifier un budget existant parmi :
+    - son libellé (nom)
+    - son montant alloué
+    - le compte auquel il est rattaché
+
+    La fonction affiche un menu, puis effectue la modification choisie
+    après vérification des entrées (unicité du nom, montant > 0, etc.).
 
     Args:
-        lst_bud (list): liste des budgets de l'utilisateur.
-        lst_cpt (list): listes des comptes de l'utilisateur.
+        lst_bud (list): Liste des budgets de l'utilisateur. Chaque budget est une liste :
+                        [libellé (str), montant (float), compte associé (str)]
+        lst_cpt (list): Liste des comptes de l'utilisateur (pour l'affectation du compte).
 
     Returns:
         None
@@ -128,26 +152,34 @@ def modifier_budget(lst_bud: list, lst_cpt: list) -> None:
 
 def rapport_bud_depenses(budget: list, lst_ope: list, mois: int, annee: int) -> float:
     """
-    Calcule le rapport dépense / budget pour un mois et une année donnée.
+    Calcule le rapport entre les dépenses effectuées sur un budget donné
+    et le montant alloué à ce budget pour un mois et une année spécifiés.
+
+    Seules sont prises en compte :
+    - les opérations associées au budget sélectionné,
+    - dont le montant est négatif (dépense),
+    - et dont la date correspond au mois et à l'année fournis.
 
     Args:
-        budget (list): liste des budgets de l'utilisateur.
-        lst_ope (list): liste des opérations de l'utilisateur.
-        mois (int): le mois (1-12)
-        annee (int): l'année
+        budget (list): Le budget concerné sous la forme [libellé (str), montant (float), compte (str)].
+        lst_ope (list): Liste des opérations de l'utilisateur.
+        mois (int): Le mois ciblé (1 = janvier, 12 = décembre).
+        annee (int): L'année ciblée (ex : 2024).
 
     Returns:
-        float: le rapport dépense/budget
+        float: Le rapport entre les dépenses et le budget (ex : 0.75 pour 75%).
     """
     nom_budget = budget[0]
     montant_budget = budget[1]
     depenses_budget = 0
     for operation in lst_ope:
         # operation[6] correspond au nom du budget associé à l'opération, operation[0] correspond à la date.
-        if (operation[6] == nom_budget and operation[3] < 0
+        if (operation[6] == nom_budget
+                and operation[3] < 0     # Ne prend en compte que les opérations de dépense (montants négatifs)
+                # Filtre uniquement les opérations correspondant au budget et à la période donnée
                 and int(operation[0].strftime('%m')) == mois and int(operation[0].strftime('%Y')) == annee):
             depenses_budget += abs(operation[3])
-    rapport = (depenses_budget / montant_budget)
+    rapport = (depenses_budget / montant_budget)    # Calcule le ratio dépenses / budget
     return rapport
 
 # --Programme principal--

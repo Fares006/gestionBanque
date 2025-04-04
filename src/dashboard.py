@@ -16,14 +16,22 @@ from shared import saisir_choix, dict_ident
 # --Fonctions-- #
 def fenetre_bord(identifiant: int) -> int:
     """
-    Donne la main à l'utilisateur pour choisir la phase suivante de l'exécution.
-    0 déconnecte l'utilisateur, 1 permet d'accéder à la gestion des comptes et 2, la gestion des budgets.
+    Affiche un tableau de bord récapitulatif à l'utilisateur et lui propose de choisir la prochaine phase.
+
+    Le tableau de bord affiche :
+        - Le nom de l'utilisateur
+        - Le solde du compte courant (défini via selection_compte())
+
+    L'utilisateur peut ensuite choisir entre :
+        - 0 : Se déconnecter
+        - 1 : Accéder à la gestion des comptes
+        - 2 : Accéder à la gestion des budgets
 
     Args:
-        identifiant (int): utilisé pour importer les opérations et calculer le solde du compte courant
+        identifiant (int): Identifiant de l'utilisateur connecté, utilisé pour accéder à ses données personnelles.
 
     Returns:
-        int: renvoie le choix de l'utilisateur (un entier)
+        int: Le choix effectué par l'utilisateur (0, 1 ou 2)
     """
     cle_cryptage = dict_ident[identifiant][-1]
     lst_cpt = import_comptes(chemin_fichier=f'../users/{identifiant}.txt', cle=cle_cryptage)

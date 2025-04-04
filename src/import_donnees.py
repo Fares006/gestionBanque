@@ -12,19 +12,26 @@ from cryptage_decryptage import CLE_CRYPTAGE, decryptage
 
 # --Constantes-- #
 
-
 # --Fonctions-- #
 def import_idents(chemin_fichier: str, cle: int = CLE_CRYPTAGE) -> dict:
     """
-    Importe le contenu du fichier ident.txt et renvoie une liste qui contient :
-    l'identifiant, le mot de passe, le nom et la clé de cryptage du fichier de l'utilisateur.
+    Importe et décrypte le contenu du fichier ident.txt contenant les informations utilisateurs.
+
+    Chaque ligne du fichier crypté est d'abord décryptée à l'aide de la méthode de César, puis découpée.
+    Les informations extraites sont :
+        - identifiant (clé du dictionnaire)
+        - mot de passe (str)
+        - nom de l'utilisateur (str)
+        - clé de cryptage associée à son fichier personnel (int)
 
     Args:
-        chemin_fichier (str): le chemin relatif du fichier ident.txt
-        cle (int): clé de cryptage du fichier (en dur)
+        chemin_fichier (str): Chemin relatif ou absolu vers le fichier ident.txt crypté.
+        cle (int, optionnel): Clé de décryptage à appliquer (par défaut : CLE_CRYPTAGE).
 
     Returns:
-        dict: le dictionnaire des identifiants (et informations associées dans une liste)
+        dict: Un dictionnaire contenant les identifiants comme clés (str),
+              et une liste d'informations associées comme valeurs :
+              [mot_de_passe (str), nom (str), cle_utilisateur (int)]
     """
     # Ouverture du fichier et initialisation des variables nécessaires
     dic_ident = dict()
@@ -42,15 +49,19 @@ def import_idents(chemin_fichier: str, cle: int = CLE_CRYPTAGE) -> dict:
 
 def import_comptes(chemin_fichier: str, cle: int) -> list:
     """
-    Importe le contenu relatif aux comptes du fichier id.txt et renvoie la liste des comptes.
-    La liste contient directement les différents noms des comptes.
+    Importe et décrypte les lignes correspondant aux comptes d’un utilisateur
+    depuis son fichier personnel, et renvoie la liste des noms de comptes.
+
+    Le fichier est lu ligne par ligne et chaque ligne est décryptée à l’aide de la clé fournie.
+    Seules les lignes commençant par "CPT" sont traitées (convention pour les comptes).
+    La lecture s'arrête dès qu'une ligne ne correspond plus à un compte.
 
     Args:
-        chemin_fichier (str): le chemin relatif du fichier id.txt
-        cle (int): clé de cryptage du fichier
+        chemin_fichier (str): Le chemin relatif ou absolu vers le fichier de l'utilisateur (ex: users/23456789.txt)
+        cle (int): La clé de décryptage à utiliser (obtenue lors de l'identification)
 
     Returns:
-        list: la liste contenant les différents comptes de l'utilisateur
+        list: Liste des noms de comptes (str) associés à l'utilisateur.
     """
     with open(file=chemin_fichier, mode='r', encoding="utf-8") as fichier:
         liste_comptes = []
@@ -66,21 +77,23 @@ def import_comptes(chemin_fichier: str, cle: int) -> list:
 
 def import_operations(chemin_fichier: str, cle: int) -> list:
     """
-    Importe le contenu relatif aux opérations du fichier id.txt et renvoie une liste de tuples qui contient :
-      - Une date (datetime.date) (premier élément, lst_ope[i][0]),
-      - Un libellé de l'opération (str) (deuxième élément, lst_ope[i][1]),
-      - Le compte concerné (str) (troisième élément, lst_ope[i][2]),
-      - Le montant de l'opération (float) (quatrième élément, lst_ope[i][3]),
-      - Le mode de paiement (str) (cinquième élément, lst_ope[i][4]),
-      - Un booléen indiquant si l'opération est effective (bool) (sixième élément, lst_ope[i][5]),
-      - Le budget concerné (str) (septième élément, lst_ope[i][6]).
+    Importe et décrypte les opérations bancaires d’un utilisateur à partir de son fichier personnel.
+
+    Seules les lignes commençant par "OPE" sont traitées. Chaque ligne est convertie en tuple contenant :
+        - date (datetime.date) : Date de l'opération (au format jj/mm/aaaa)
+        - libellé (str) : Description de l'opération
+        - compte (str) : Nom du compte concerné
+        - montant (float) : Montant de l'opération
+        - mode de paiement (str) : Type de paiement (ex: CB, CHE, VIR)
+        - état (bool) : Statut de l'opération (True si passée, False sinon)
+        - budget (str) : Budget auquel l'opération est rattachée
 
     Args:
-        chemin_fichier (str): le chemin relatif du fichier id.txt
-        cle (int): clé de cryptage du fichier
+        chemin_fichier (str): Chemin relatif ou absolu vers le fichier utilisateur (ex: users/23456789.txt)
+        cle (int): Clé de décryptage à utiliser pour lire le contenu du fichier.
 
     Returns:
-        list: la liste des tuples contenant les différentes informations concernant chaque opération
+        list: Liste de tuples représentant les opérations de l'utilisateur.
     """
     with open(file=chemin_fichier, mode='r', encoding="utf-8") as fichier:
         liste_ope = []
@@ -103,17 +116,20 @@ def import_operations(chemin_fichier: str, cle: int) -> list:
 
 def import_budgets(chemin_fichier: str, cle: int) -> list:
     """
-    Importe le contenu relatif aux budgets du fichier id.txt et renvoie une liste de listes qui contient :
-      - La catégorie de dépenses (str) (premier élément, lst_bud[0]),
-      - Le montant alloué (float) (deuxième élément, lst_bud[1]),
-      - Le compte associé (str) (troisième élément, lst_bud[2]).
+    Importe et décrypte les budgets d’un utilisateur à partir de son fichier personnel.
+
+    Seules les lignes commençant par "BUD" sont prises en compte. Chaque ligne est convertie
+    en une liste contenant les informations suivantes :
+        - libellé du budget (str) : Catégorie de dépenses (ex: alimentation, loisirs)
+        - montant alloué (float) : Plafond budgétaire mensuel autorisé
+        - compte associé (str) : Nom du compte rattaché à ce budget
 
     Args:
-        chemin_fichier (str): le chemin relatif du fichier id.txt
-        cle (int): clé de cryptage du fichier
+        chemin_fichier (str): Chemin relatif ou absolu vers le fichier utilisateur (ex: users/23456789.txt)
+        cle (int): Clé de décryptage à utiliser pour lire le contenu du fichier.
 
     Returns:
-        list: la liste des tuples contenant les différentes informations de chaque budget
+        list: Liste de listes représentant les budgets de l'utilisateur.
     """
     with open(file=chemin_fichier, mode='r', encoding="utf-8") as fichier:
         liste_bud = []

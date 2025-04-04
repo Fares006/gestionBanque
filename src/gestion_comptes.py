@@ -16,11 +16,20 @@ from shared import saisir_choix, enregistrement_modif, dict_ident
 # --Fonctions-- #
 def afficher_menu_g_comptes() -> None:
     """
-    Affiche le menu pour la gestion des comptes.
+    Affiche en console le menu des actions disponibles dans la gestion des comptes.
+
+    Le menu propose à l'utilisateur les options suivantes :
+        0. Revenir en arrière
+        1. Afficher le solde d'un compte
+        2. Ajouter un nouveau compte
+        3. Afficher les opérations d'un compte
+        4. Ajouter une nouvelle opération
+        5. Effectuer un virement entre comptes
 
     Returns:
         None
     """
+
     print("\nDe quelle fonctionnalité avez-vous besoin ?")
     print("0. Revenir en arrière\n"
           "1. Afficher le solde du compte\n"
@@ -34,18 +43,19 @@ def gestion_comptes(identifiant: int) -> None:
     """
     Gère toutes les interactions liées à la gestion des comptes bancaires d'un utilisateur.
 
-    Cette fonction permet à l'utilisateur authentifié de :
+    Cette fonction propose un menu permettant à l'utilisateur authentifié de :
     - Consulter le solde de ses comptes
     - Ajouter un nouveau compte avec un solde initial
-    - Afficher les opérations liées à un compte, avec ou sans filtre par date
-    - Ajouter une nouvelle opération bancaire
+    - Afficher les opérations associées à un compte (avec ou sans filtre par date)
+    - Ajouter une nouvelle opération
     - Effectuer un virement entre deux comptes
 
-    Chaque action peut être répétée plusieurs fois grâce à un système de boucles interactives.
-    Les modifications effectuées sont automatiquement enregistrées dans le fichier utilisateur après chaque action.
+    Chaque fonctionnalité est réutilisable grâce à une boucle interactive.
+    Toutes les modifications sont automatiquement enregistrées dans le fichier utilisateur
+    (avec chiffrement) après chaque action.
 
     Args:
-        identifiant (int): L'identifiant de l'utilisateur connecté, utilisé pour accéder à ses données chiffrées.
+        identifiant (int): Identifiant de l'utilisateur connecté (utilisé pour accéder à ses données chiffrées).
 
     Returns:
         None
@@ -60,6 +70,7 @@ def gestion_comptes(identifiant: int) -> None:
     choix = saisir_choix(valeurs_autorisees={0, 1, 2, 3, 4, 5})
 
     while choix != 0:
+        # Boucle de navigation principale (choix utilisateur)
         match choix:
             case 1:  # Solde
                 boucle = 'O'
