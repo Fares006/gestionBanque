@@ -10,11 +10,11 @@ from comptes import calcul_dict_soldes, selection_compte
 from import_donnees import import_comptes, import_operations
 from shared import saisir_choix, dict_ident
 
-
 # --Constantes-- #
 
+
 # --Fonctions-- #
-def fenetre_bord(identifiant: int) -> int:
+def fenetre_bord(identifiant: str) -> int:
     """
     Affiche un tableau de bord récapitulatif à l'utilisateur et lui propose de choisir la prochaine phase.
 
@@ -38,16 +38,16 @@ def fenetre_bord(identifiant: int) -> int:
     lst_ope = import_operations(chemin_fichier=f'../users/{identifiant}.txt', cle=cle_cryptage)
     dict_soldes = calcul_dict_soldes(lst_cpt, lst_ope)
     nom = dict_ident[identifiant][1]
-    # selection_compte(lst_cpt) renvoie le compte courant
+    # selection_compte(lst_cpt) renvoie le compte courant, car courant=True par défaut
     solde_courant = dict_soldes[selection_compte(lst_cpt)]
     print(f"\n|-----Tableau de bord-----|\n"
           f"| Bonjour {nom} |\n"
-          f"| Vous avez {solde_courant}€ sur votre compte |")
+          f"| Vous avez {solde_courant:.2f} € sur votre compte |")
 
     print("\nBienvenue. De quelle fonctionnalité avez-vous besoin ?")
     print("0. Déconnexion\n"
           "1. Gestion des comptes\n"
-          "2. Gestions des budgets\n")
+          "2. Gestion des budgets\n")
 
     return saisir_choix(valeurs_autorisees={0, 1, 2})
 

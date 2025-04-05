@@ -5,11 +5,7 @@
 #   |-----Cryptage des fichiers utilisateurs-----|   #
 #   |--------------------------------------------|   #
 # --Imports-- #
-from cryptage_decryptage import cryptage, decryptage
-
-
 # --Constantes-- #
-
 # --Fonctions-- #
 def import_idents_clair(chemin_fichier: str) -> dict:
     """
@@ -40,75 +36,73 @@ def import_idents_clair(chemin_fichier: str) -> dict:
 
 def crypter_fichier(path: str, cle: int) -> None:
     """
-    Crypte le contenu d'un fichier texte à l'aide du chiffrement de César, en écrasant le fichier original.
-
-    Chaque caractère du fichier (sauf '\n' et '*', selon la fonction cryptage) est transformé
-    en utilisant la clé fournie. Le fichier est ensuite réécrit avec son contenu crypté.
+    Crypte le contenu d'un fichier texte à l'aide du chiffrement de César.
+    Le fichier est modifié directement (en l'écrasant).
 
     Args:
-        path (str): Le chemin absolu (ou relatif) vers le fichier à crypter.
-        cle (int): La clé de cryptage (valeur entière de décalage).
-
-    Returns:
-        None
+        path (str): Chemin vers le fichier à crypter.
+        cle (int): Clé de décalage.
     """
-    resultat = ''
-    with open(file=path, mode='r', encoding='utf-8') as fichier:
-        ligne = fichier.readline()
-        while ligne != '':
-            for char in ligne:
-                resultat += cryptage(chaine=char, cle=cle)
-            ligne = fichier.readline()
+    with open(path, 'r', encoding='utf-8') as fichier:
+        contenu = fichier.read()
 
-    with open(file=path, mode='w', encoding='utf-8') as fichier:
-        fichier.write(resultat)
+    contenu_crypte = cryptage(contenu, cle)
+
+    with open(path, 'w', encoding='utf-8') as fichier:
+        fichier.write(contenu_crypte)
 
 
-def decrypter_fichier(path: str, cle: int = 0) -> None:
+
+def decrypter_fichier(path: str, cle: int) -> None:
     """
-    Décrypte le contenu d’un fichier texte à l’aide du chiffrement de César,
-    en écrasant le fichier original.
-
-    Chaque caractère du fichier (sauf '\n' et '*', selon la fonction decryptage)
-    est transformé en soustrayant la clé fournie. Le fichier est ensuite réécrit
-    avec son contenu décrypté.
+    Décrypte le contenu d’un fichier texte à l’aide du chiffrement de César.
+    Le fichier est modifié directement (en l’écrasant).
 
     Args:
-        path (str): Chemin absolu (ou relatif) vers le fichier à décrypter.
-        cle (int): Clé de décryptage (valeur entière du décalage inverse à appliquer). Par défaut : 0.
-
-    Returns:
-        None
+        path (str): Chemin vers le fichier à décrypter.
+        cle (int): Clé de décalage inverse à appliquer.
     """
-    resultat = ''
-    with open(file=path, mode='r', encoding='utf-8') as fichier:
-        ligne = fichier.readline()
-        while ligne != '':
-            for char in ligne:
-                resultat += decryptage(chaine=char, cle=cle)
-            ligne = fichier.readline()
+    with open(path, 'r', encoding='utf-8') as fichier:
+        contenu = fichier.read()
 
-    with open(file=path, mode='w', encoding='utf-8') as fichier:
-        fichier.write(resultat)
+    contenu_decrypte = decryptage(contenu, cle)
+
+    with open(path, 'w', encoding='utf-8') as fichier:
+        fichier.write(contenu_decrypte)
 
 
 # --Programme principal-- #
 if __name__ == '__main__':
-    #  ---Bloc de cryptage de tous les fichiers--- :
-    # dict_ident_clair = import_idents_clair(chemin_fichier='./ident_clair.txt')
-    # liste_ident = []
-    # for id in dict_ident_clair.keys():
-    #     liste_ident.append(id)
-    # crypter_fichier(path='./ident.txt', cle=CLE_CRYPTAGE)
-    # for id in liste_ident:
-    #     crypter_fichier(path=f'../users/{id}.txt', cle=dict_ident_clair[id][-1])
+    from constantes import CLE_CRYPTAGE
+    from cryptage_decryptage import cryptage, decryptage
+    from import_donnees import import_idents  # pour les identifiants cryptés
 
-    #   ---Bloc de décryptage de tous les fichiers---
-    # dict_ident = import_idents(chemin_fichier='./ident.txt')
-    # liste_ident = []
-    # for id in dict_ident.keys():
-    #     liste_ident.append(id)
-    # decrypter_fichier(path='./ident.txt', cle=CLE_CRYPTAGE)
-    # for id in liste_ident:
-    #     decrypter_fichier(path=f'../users/{id}.txt', cle=dict_ident[id][-1])
-    pass
+    choix = input("Souhaitez-vous crypter ou décrypter ? (C/D) : ").strip().upper()
+
+    if choix == 'C':
+        print("Cryptage en cours...")
+        dict_ident_clair = import_idents_clair('./ident_clair.txt')
+        liste_ident = list(dict_ident_clair.keys())
+
+        crypter_fichier('./ident.txt', cle=CLE_CRYPTAGE)
+        for ident in liste_ident:
+            cle_perso = dict_ident_clair[ident][-1]
+            crypter_fichier(f'../users/{ident}.txt', cle=cle_perso)
+
+        print("Tous les fichiers ont été cryptés avec succès.")
+
+    elif choix == 'D':
+        print("Décryptage en cours...")
+        dict_ident = import_idents('./ident.txt')
+        liste_ident = list(dict_ident.keys())
+
+        decrypter_fichier('./ident.txt', cle=CLE_CRYPTAGE)
+        for ident in liste_ident:
+            cle_perso = dict_ident[ident][-1]
+            decrypter_fichier(f'../users/{ident}.txt', cle=cle_perso)
+
+        print("Tous les fichiers ont été décryptés avec succès.")
+
+    else:
+        print("Choix invalide. Veuillez entrer 'C' pour crypter ou 'D' pour décrypter.")
+

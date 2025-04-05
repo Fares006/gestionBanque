@@ -26,13 +26,14 @@ def get_identifiant() -> str:
     Returns:
         str: L'identifiant saisi et validé, ou une chaîne vide en cas d'échec.
     """
-    identifiant_trouve = False
     nb_essais = 0
-    while nb_essais < 5 and not identifiant_trouve:
+    # L'utilisateur a 5 essais pour saisir le bon identifiant.
+    while nb_essais < 5:
         identifiant = input('Veuillez saisir votre identifiant : ')
+        # Si la longueur de l'identifiant est incorrecte, l'essai n'est pas comptabilisé.
         if len(identifiant) != 8:
-            print('L\'identifiant doit faire 8 caractères.')
-        elif identifiant not in dict_ident.keys():
+            print("Erreur : l'identifiant doit contenir exactement 8 caractères.")
+        elif identifiant not in dict_ident:
             nb_essais += 1
             print(f"Identifiant introuvable. Vous avez {5 - nb_essais} essais restants.")
         else:
@@ -57,12 +58,14 @@ def get_mdp(identifiant: str) -> str:
     Returns:
         str: Le mot de passe saisi et validé, ou une chaîne vide en cas d'échec.
     """
-    connecte = False
     nb_essais = 0
-    while nb_essais < 5 and not connecte:
+    # L'utilisateur a 5 essais pour saisir le bon mot de passe.
+    while nb_essais < 5:
         mdp = input('Veuillez saisir votre mot de passe : ')
+        # Si la longueur du mot de passe est incorrecte, l'essai n'est pas comptabilisé.
         if len(mdp) != 6:
             print('Le mot de passe doit faire 6 caractères.')
+        # dict_ident[identifiant][0] correspond au mot de passe de l'utilisateur dont l'id est passé en paramètre.
         elif mdp != dict_ident[identifiant][0]:
             nb_essais += 1
             print(f"Mot de passe incorrect. Vous avez {5 - nb_essais} essais restants.")
@@ -87,10 +90,8 @@ def identification() -> tuple:
             - str : L'identifiant saisi (vide si l'utilisateur échoue à s'identifier).
     """
     identifiant = get_identifiant()
-    if identifiant != '':
-        mdp = get_mdp(identifiant)
-        if mdp != '':
-            return True, identifiant
+    if identifiant and get_mdp(identifiant):
+        return True, identifiant
     return False, identifiant
 
 

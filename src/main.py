@@ -5,13 +5,13 @@
 #   |--Groupe 2 (MOUSSA, ASSEMAT, JIN, ZAMOURI)--|   #
 #   |--------------------------------------------|   #
 # --Imports-- #
-from dashboard import *
+from dashboard import fenetre_bord
 from gestion_budgets import gestion_budgets
 from gestion_comptes import gestion_comptes
 from identification import *
 
-
 # --Constantes-- #
+
 
 # --Fonctions-- #
 def gestion_banque() -> None:
@@ -31,6 +31,7 @@ def gestion_banque() -> None:
     Returns:
         None
     """
+    # Initialisation de nos variables de connexion grâce à identification() qui renvoie un tuple
     connexion_valide, identifiant = identification()
     while connexion_valide:
         choix_phase = fenetre_bord(identifiant)

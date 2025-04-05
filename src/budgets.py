@@ -6,6 +6,15 @@
 #   |----------Phase gestion de budgets----------|   #
 #   |--------------------------------------------|   #
 # --Imports-- #
+from datetime import datetime
+from constantes import (
+    IDX_BUD_NOM,
+    IDX_BUD_MONTANT,
+    IDX_OPE_DATE,
+    IDX_BUD_CPT,
+    IDX_OPE_MONTANT,
+    IDX_OPE_BUD
+)
 from shared import saisir_choix
 
 
@@ -16,25 +25,22 @@ def selection_budget(lst_bud: list) -> list:
     """
     Permet à l'utilisateur de sélectionner un budget parmi ceux enregistrés.
 
-    Affiche en console une liste numérotée des budgets disponibles (par leur libellé).
-    L'utilisateur saisit un choix valide, et la fonction retourne l'entrée correspondante
-    dans la liste lst_bud.
+    Affiche une liste numérotée des budgets disponibles (par leur libellé).
+    L'utilisateur saisit un choix, et la fonction retourne le budget sélectionné.
 
     Args:
-        lst_bud (list): Liste des budgets de l'utilisateur, chaque budget étant représenté par une liste
-                        [libellé (str), montant (float), compte associé (str)].
+        lst_bud (list): Liste des budgets, chacun sous forme [nom, montant, compte associé].
 
     Returns:
-        list: Le budget sélectionné (sous forme de liste) parmi ceux de lst_bud.
+        list: Le budget sélectionné (sous forme de liste).
     """
-    nb_budgets = len(lst_bud)
-    print("Faites le choix du budget : ")
-    for i in range(nb_budgets):
-        print(f'{i + 1}. {lst_bud[i][0]}')
-    print("Choisissez le compte: ")
-    choix = saisir_choix(valeurs_autorisees=set(range(1, nb_budgets + 1))) - 1  # On enlève le 1 ajouté à l'affichage
-    budget = lst_bud[choix]
-    return budget
+    print("Faites le choix du budget :")
+    for i, bud in enumerate(lst_bud):
+        print(f'{i + 1}. {bud[IDX_BUD_NOM]}')
+
+    print("Choisissez le budget : ")
+    choix = saisir_choix(valeurs_autorisees=set(range(1, len(lst_bud) + 1))) - 1
+    return lst_bud[choix]
 
 
 def creation_budget(lst_cpt: list, lst_bud: list) -> list:
@@ -46,36 +52,36 @@ def creation_budget(lst_cpt: list, lst_bud: list) -> list:
     - un montant strictement positif (float)
     - un compte associé (choisi dans lst_cpt)
 
-    Le budget est retourné sous la forme :
-        [libellé (str), montant (float), compte associé (str)]
-
     Args:
         lst_cpt (list): Liste des comptes de l'utilisateur.
         lst_bud (list): Liste des budgets existants (pour éviter les doublons de nom).
 
     Returns:
-        list: Le budget créé, structuré sous forme de liste.
+        list: [libellé (str), montant (float), compte associé (str)]
     """
     from comptes import selection_compte
-    lst_bud_minuscule = [budget[0].casefold() for budget in lst_bud]
-    libelle = input("Libellé du nouveau budget : ")
-    while libelle.casefold() in lst_bud_minuscule:
-        print("Ce budget existe déjà.")
-        libelle = input("Libellé du budget : ")
 
-    saisie_seuil = input("Montant en € du budget : ")
+    lst_bud_casefold = [budget[IDX_BUD_NOM].casefold() for budget in lst_bud]
+
+    libelle = input("Libellé du nouveau budget : ").strip()
+    while libelle.casefold() in lst_bud_casefold:
+        print("Ce budget existe déjà.")
+        libelle = input("Libellé du budget : ").strip()
+
     saisie_seuil_valide = False
     while not saisie_seuil_valide:
+        saisie_seuil = input("Montant en € du budget (doit être supérieur à 0 €) : ")
         try:
             seuil = float(saisie_seuil)
             if seuil > 0:
                 saisie_seuil_valide = True
+            else:
+                print("Le montant doit être strictement supérieur à 0 €.")
         except ValueError:
             print("Veuillez entrer un montant en € correct.")
-            saisie_seuil = input("Montant en € du budget (doit être supérieur à 0 €) : ")
 
     compte = selection_compte(lst_cpt, courant=False)
-    return [libelle, seuil, compte]
+    return [libelle.capitalize(), seuil, compte]
 
 
 def ajout_budget(lst_bud: list, budget: list) -> None:
@@ -93,8 +99,9 @@ def ajout_budget(lst_bud: list, budget: list) -> None:
     Returns:
         None
     """
+    assert isinstance(budget, list) and len(budget) == 3, "Le budget doit être une liste de 3 éléments"
     lst_bud.append(budget)
-    print(f"Le budget : {budget[0]} a été ajouté avec succès.")
+    print(f"Le budget : {budget[IDX_BUD_NOM]} a été ajouté avec succès.")
 
 
 def modifier_budget(lst_bud: list, lst_cpt: list) -> None:
@@ -122,34 +129,36 @@ def modifier_budget(lst_bud: list, lst_cpt: list) -> None:
     choix = saisir_choix(valeurs_autorisees={1, 2, 3})
 
     if choix == 1:
-        nouveau_libelle = input("Nouveau nom du libellé : ")
-        while nouveau_libelle.casefold() == budget_a_modifier[0].casefold():
+        nouveau_libelle = input("Nouveau nom du libellé : ").strip().capitalize()
+        while nouveau_libelle.casefold() == budget_a_modifier[IDX_BUD_NOM].casefold():
             nouveau_libelle = input("Le nouveau nom doit être différent.\nNouveau nom du libellé : ")
-        budget_a_modifier[0] = nouveau_libelle
+        budget_a_modifier[IDX_BUD_NOM] = nouveau_libelle
+        print(f"Libellé mis à jour : {nouveau_libelle}")
 
     elif choix == 2:
-        nouveau_montant = None
         saisie_valide = False
         while not saisie_valide:
-            saisie = input(f"Nouveau montant du budget {budget_a_modifier[0]} "
-                           f"(actuel : {budget_a_modifier[1]:.2f} €) : ")
+            saisie = input(f"Nouveau montant du budget {budget_a_modifier[IDX_BUD_NOM]} "
+                           f"(actuel : {budget_a_modifier[IDX_BUD_MONTANT]:.2f} €) : ")
             try:
                 nouveau_montant = float(saisie)
-                if nouveau_montant != budget_a_modifier[1] and nouveau_montant > 0:
+                if nouveau_montant > 0 and nouveau_montant != budget_a_modifier[IDX_BUD_MONTANT]:
                     saisie_valide = True
                 else:
-                    print("Le montant doit être supérieur à 0 et différent de celui actuellement présent.")
+                    print("Le montant doit être supérieur à 0 et différent de l'actuel.")
             except ValueError:
                 print("Veuillez entrer un montant en € valide.")
         budget_a_modifier[1] = nouveau_montant
+        print(f"Montant mis à jour : {nouveau_montant:.2f} €")
 
     elif choix == 3:
-        print(f"Compte actuel : {budget_a_modifier[2]}")
+        print(f"Compte actuel : {budget_a_modifier[IDX_BUD_CPT]}")
         nouveau_compte = selection_compte(lst_cpt, courant=False)
         budget_a_modifier[2] = nouveau_compte
+        print(f"Compte associé mis à jour : {nouveau_compte}")
 
 
-def rapport_bud_depenses(budget: list, lst_ope: list, mois: int, annee: int) -> float:
+def rapport_bud_depenses(budget: list, lst_ope: list, date_reference: datetime.date) -> float:
     """
     Calcule le rapport entre les dépenses effectuées sur un budget donné
     et le montant alloué à ce budget pour un mois et une année spécifiés.
@@ -157,28 +166,30 @@ def rapport_bud_depenses(budget: list, lst_ope: list, mois: int, annee: int) -> 
     Seules sont prises en compte :
     - les opérations associées au budget sélectionné,
     - dont le montant est négatif (dépense),
-    - et dont la date correspond au mois et à l'année fournis.
+    - et dont la date correspond au mois et à l'année extraits de date_reference.
 
     Args:
         budget (list): Le budget concerné sous la forme [libellé (str), montant (float), compte (str)].
         lst_ope (list): Liste des opérations de l'utilisateur.
-        mois (int): Le mois ciblé (1 = janvier, 12 = décembre).
-        annee (int): L'année ciblée (ex : 2024).
+        date_reference (datetime.date): Date cible contenant le mois et l'année du rapport (jour ignoré).
 
     Returns:
         float: Le rapport entre les dépenses et le budget (ex : 0.75 pour 75%).
     """
-    nom_budget = budget[0]
-    montant_budget = budget[1]
-    depenses_budget = 0
+    nom_budget = budget[IDX_BUD_NOM]
+    montant_budget = budget[IDX_BUD_MONTANT]
+
+    depenses_budget = 0.0
     for operation in lst_ope:
-        # operation[6] correspond au nom du budget associé à l'opération, operation[0] correspond à la date.
-        if (operation[6] == nom_budget
-                and operation[3] < 0     # Ne prend en compte que les opérations de dépense (montants négatifs)
-                # Filtre uniquement les opérations correspondant au budget et à la période donnée
-                and int(operation[0].strftime('%m')) == mois and int(operation[0].strftime('%Y')) == annee):
-            depenses_budget += abs(operation[3])
-    rapport = (depenses_budget / montant_budget)    # Calcule le ratio dépenses / budget
-    return rapport
+        if (
+            operation[IDX_OPE_BUD] == nom_budget
+            and operation[IDX_OPE_MONTANT] < 0
+            and operation[IDX_OPE_DATE].month == date_reference.month
+            and operation[IDX_OPE_DATE].year == date_reference.year
+        ):
+            depenses_budget += abs(operation[IDX_OPE_MONTANT])
+
+    return depenses_budget / montant_budget if montant_budget else 0.0
+
 
 # --Programme principal--

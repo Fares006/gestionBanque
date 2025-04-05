@@ -7,14 +7,10 @@
 #   |--------------------------------------------|   #
 # --Imports-- #
 import datetime
-import hashlib
-import os
-import shutil
-
-from cryptage_decryptage import cryptage
 from import_donnees import import_idents
 
 # --Constantes-- #
+# --Variables-- #
 dict_ident = import_idents(chemin_fichier='./ident.txt')
 
 
@@ -35,104 +31,78 @@ def saisir_choix(valeurs_autorisees: set) -> int:
     """
     while True:
         try:
+            # Demande de saisie à l'utilisateur
             saisie = input("Votre choix : ")
             choix = int(saisie)
+
+            # Vérifie que la valeur saisie est bien dans l'ensemble autorisé
             if choix in valeurs_autorisees:
                 return choix
             else:
-                print("Veuillez saisir un nombre valide.")
+                print(f"Valeur non autorisée. Veuillez choisir parmi : {sorted(valeurs_autorisees)}")
         except ValueError:
-            print("Veuillez saisir un nombre valide.")
+            # Gestion d'une saisie non convertible en entier
+            print("Entrée invalide. Veuillez saisir un nombre entier.")
 
 
-def saisir_date() -> datetime.date:
+def saisir_date(day: bool = True, month: bool = True, year: bool = True) -> datetime.date:
     """
-    Invite l'utilisateur à saisir une date au format jj/mm/aaaa,
-    et renvoie cette date sous forme d'objet datetime.date.
+    Invite l'utilisateur à saisir une date au format attendu selon les composantes activées.
 
-    La saisie est répétée tant que le format n'est pas valide.
+    Le format de saisie s'ajuste selon les paramètres :
+    - day=True, month=True, year=True   → jj/mm/aaaa
+    - day=False, month=True, year=True  → mm/aaaa
+    - day=False, month=False, year=True → aaaa
 
-    Returns:
-        datetime.date: La date correctement saisie et convertie.
-    """
-    while True:
-        saisie = input("Date de l'opération (jj/mm/aaaa): ")
-        try:
-            date_op = datetime.datetime.strptime(saisie, "%d/%m/%Y").date()
-            return date_op
-        except ValueError:
-            print("Format invalide. Veuillez entrer une date au format jj/mm/aaaa.")
-
-
-def enregistrement_modif(lst_cpt: list, lst_ope: list, lst_bud: list, identifiant: int, cle_cryptage: int) -> None:
-    """
-    Enregistre les données utilisateur (comptes, opérations, budgets) de manière sécurisée
-    avec chiffrement, hash et sauvegardes.
-
-    Les fichiers temporaires et de sauvegarde sont stockés dans des sous-dossiers :
-        - ../users/temp/ pour les fichiers .tmp
-        - ../users/backup/ pour les fichiers .bak
-
-    Les dates des opérations sont enregistrées au format : dd/mm/YYYY
+    La saisie est répétée jusqu'à ce qu'une date valide soit fournie.
 
     Args:
-        lst_cpt (list): Liste des comptes de l'utilisateur.
-        lst_ope (list): Liste des opérations (tuples) de l'utilisateur.
-        lst_bud (list): Liste des budgets (listes) de l'utilisateur.
-        identifiant (int): Identifiant de l'utilisateur (utilisé pour nommer le fichier).
-        cle_cryptage (int): Clé de cryptage utilisée pour sécuriser les données.
+        day (bool): Si True, demande le jour.
+        month (bool): Si True, demande le mois.
+        year (bool): Si True, demande l'année.
 
     Returns:
-        None
+        datetime.date: L'objet date correspondant à la saisie.
+                       Les valeurs manquantes sont fixées par défaut à :
+                       - 1 pour le jour
+                       - janvier pour le mois
     """
-    dossier_users = "../users"
-    dossier_temp = os.path.join(dossier_users, "temp")
-    dossier_backup = os.path.join(dossier_users, "backup")
+    # Construction du format d'affichage et de parsing selon les paramètres
+    if day and month and year:
+        prompt = "Date (jj/mm/aaaa) : "
+        fmt = "%d/%m/%Y"
+    elif not day and month and year:
+        prompt = "Date (mm/aaaa) : "
+        fmt = "%m/%Y"
+    elif not day and not month and year:
+        prompt = "Année (aaaa) : "
+        fmt = "%Y"
+    else:
+        raise ValueError("Configuration de saisie invalide : year doit être True.")
 
-    os.makedirs(dossier_temp, exist_ok=True)
-    os.makedirs(dossier_backup, exist_ok=True)
+    while True:
+        saisie = input(prompt)
+        try:
+            date_obj = datetime.datetime.strptime(saisie, fmt)
 
-    chemin_original = os.path.join(dossier_users, f"{identifiant}.txt")
-    chemin_temporaire = os.path.join(dossier_temp, f"{identifiant}.tmp")
-    chemin_backup = os.path.join(dossier_backup, f"{identifiant}.bak")
+            # On complète la date avec les valeurs par défaut si nécessaire
+            return datetime.date(
+                year=date_obj.year,
+                month=date_obj.month if month else 1,
+                day=date_obj.day if day else 1
+            )
+        except ValueError:
+            print(f"Format invalide. Veuillez entrer une date au format {prompt.strip(': ')}.")
 
-    try:
-        lignes = []
 
-        for compte in lst_cpt:
-            lignes.append(f"CPT*{compte}")
 
-        for operation in lst_ope:
-            date_str = operation[0].strftime('%d/%m/%Y')
+def saisie_oui_non(prompt: str) -> bool:
+    reponse = ""
+    while reponse.upper() not in ['O', 'N']:
+        reponse = input(prompt).strip()
+        if reponse.upper() not in ['O', 'N']:
+            print("Veuillez répondre par 'O' pour Oui ou 'N' pour Non.")
+    return reponse.upper() == 'O'
 
-            # Remplace la date (1er champ)
-            operation_str = '*'.join([date_str] + list(map(str, operation[1:])))
-            lignes.append(f"OPE*{operation_str}")
 
-        for budget in lst_bud:
-            lignes.append(f"BUD*{'*'.join(map(str, budget))}")
 
-        contenu_en_clair = "\n".join(lignes)
-
-        # Ajout du hash
-        hash_val = hashlib.sha256(contenu_en_clair.encode("utf-8")).hexdigest()
-        contenu_complet = contenu_en_clair + f"\nHASH*{hash_val}"
-
-        # Chiffrement
-        texte_chiffre = cryptage(contenu_complet, cle_cryptage)
-
-        # Écriture dans un fichier temporaire
-        with open(chemin_temporaire, "w", encoding="utf-8") as f:
-            f.write(texte_chiffre)
-
-        # Sauvegarde de l'ancien fichier
-        if os.path.exists(chemin_original):
-            shutil.copy(chemin_original, chemin_backup)
-
-        # Remplacement atomique
-        os.replace(chemin_temporaire, chemin_original)
-
-    except Exception as e:
-        print(f"Erreur lors de l'enregistrement sécurisé : {e}")
-        if os.path.exists(chemin_temporaire):
-            os.remove(chemin_temporaire)

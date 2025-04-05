@@ -7,12 +7,12 @@
 #   |--------------------------------------------|   #
 # --Imports-- #
 import calendar
-import datetime
 import locale
 
 from budgets import *
 from import_donnees import import_comptes, import_operations, import_budgets
-from shared import enregistrement_modif, dict_ident
+from shared import dict_ident, saisie_oui_non, saisir_date
+from utils import enregistrement_modif
 
 try:
     locale.setlocale(locale.LC_TIME, 'French_France.1252')
@@ -70,67 +70,42 @@ def gestion_budgets(identifiant: int) -> None:
     lst_bud = import_budgets(chemin_fichier=f'../users/{identifiant}.txt', cle=cle_cryptage)
     nom = dict_ident[identifiant][1]
 
-    afficher_menu_g_budgets()
-    choix = saisir_choix(valeurs_autorisees={0, 1, 2, 3, 4})
-
+    choix = -1
     while choix != 0:
         # Boucle de navigation principale (choix utilisateur)
+        afficher_menu_g_budgets()
+        choix = saisir_choix(valeurs_autorisees={0, 1, 2, 3, 4})
         match choix:
             case 1:  # Afficher les budgets
                 print(f"|-----Affichage des budgets de {nom} -----|")
                 print("\n".join(
                     f"- {budget[0]} : {budget[1]}€ associé au compte : {budget[2]}" for budget in lst_bud))
             case 2:  # Ajouter un budget
-                boucle = 'O'
-                while boucle.upper() != 'N':
+                afficher = True
+                while afficher or saisie_oui_non("Souhaitez-vous ajouter un autre budget ? (O/N) : "):
+                    afficher = False
                     print("|-----Ajout d'un budget-----|")
                     budget = creation_budget(lst_cpt, lst_bud)
                     ajout_budget(lst_bud, budget)
-
-                    boucle = ""
-                    while boucle.upper() not in ['O', 'N']:
-                        boucle = input("Souhaitez-vous ajouter un autre budget ? (O/N) : ")
-                        if boucle.upper() not in ['O', 'N']:
-                            print("Veuillez répondre par 'O' pour Oui ou 'N' pour Non.")
             case 3:  # Modifier un budget
-                boucle = 'O'
-                while boucle.upper() != 'N':
+                afficher = True
+                while afficher or saisie_oui_non("Souhaitez-vous modifier un autre budget ? (O/N) : "):
+                    afficher = False
                     print("|-----Modification d'un budget-----|")
                     modifier_budget(lst_bud, lst_cpt)
-
-                    boucle = ""
-                    while boucle.upper() not in ['O', 'N']:
-                        boucle = input("Souhaitez-vous modifier un autre budget ? (O/N) : ")
-                        if boucle.upper() not in ['O', 'N']:
-                            print("Veuillez répondre par 'O' pour Oui ou 'N' pour Non.")
             case 4:  # Rapport dépense budget
-                boucle = 'O'
-                while boucle.upper() != 'N':
+                afficher = True
+                while afficher or saisie_oui_non("Souhaitez-vous consulter un autre rapport ? (O/N) : "):
+                    afficher = False
                     print("|-----Rapport dépenses / budget-----|")
                     budget = selection_budget(lst_bud)
-
-                    saisie_valide = False
-                    while not saisie_valide:
-                        saisie = input("Entrez le mois et l'année (mm/yyyy) : ")
-                        try:
-                            date_obj = datetime.datetime.strptime(saisie, "%m/%Y")
-                            mois = date_obj.month
-                            annee = date_obj.year
-                            saisie_valide = True
-                        except ValueError:
-                            print("Format invalide. Veuillez entrer une date au format mm/yyyy.")
-
-                    rapport = rapport_bud_depenses(budget, lst_ope, mois, annee)
-                    print(f"Pour le budget {budget[0]} au mois de {calendar.month_name[mois].capitalize()} {annee}, "
+                    mois_annee = saisir_date(day=False)
+                    rapport = rapport_bud_depenses(budget, lst_ope, mois_annee)
+                    print(f"Pour le budget {budget[0]} au mois de "
+                          f"{calendar.month_name[mois_annee.month].capitalize()} {mois_annee.year}, "
                           f"vous avez utilisé {(rapport * 100):.2f} % de votre budget.\n"
                           f"Dépense / budget :\n {rapport * budget[1]:.2f}€ / {budget[1]}€")
 
-                    boucle = ""
-                    while boucle.upper() not in ['O', 'N']:
-                        boucle = input("Souhaitez-vous consulter un autre rapport ? (O/N) : ")
-                        if boucle.upper() not in ['O', 'N']:
-                            print("Veuillez répondre par 'O' pour Oui ou 'N' pour Non.")
-
         enregistrement_modif(lst_cpt, lst_ope, lst_bud, identifiant, cle_cryptage)
-        afficher_menu_g_budgets()
-        choix = saisir_choix(valeurs_autorisees={0, 1, 2, 3, 4})
+        print("Données enregistrées dans la base de données avec succès.")
+

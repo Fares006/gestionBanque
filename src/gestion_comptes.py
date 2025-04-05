@@ -8,15 +8,17 @@
 # --Imports-- #
 from comptes import *
 from import_donnees import *
-from shared import saisir_choix, enregistrement_modif, dict_ident
-
+from shared import saisir_choix, saisie_oui_non, dict_ident
+from utils import enregistrement_modif
 
 # --Constantes-- #
+
 
 # --Fonctions-- #
 def afficher_menu_g_comptes() -> None:
     """
     Affiche en console le menu des actions disponibles dans la gestion des comptes.
+    Cette fonction est appelée à chaque fin de boucle pour réafficher les options.
 
     Le menu propose à l'utilisateur les options suivantes :
         0. Revenir en arrière
@@ -66,93 +68,61 @@ def gestion_comptes(identifiant: int) -> None:
     lst_bud = import_budgets(chemin_fichier=f'../users/{identifiant}.txt', cle=cle_cryptage)
     dict_soldes = calcul_dict_soldes(lst_cpt, lst_ope)
 
-    afficher_menu_g_comptes()
-    choix = saisir_choix(valeurs_autorisees={0, 1, 2, 3, 4, 5})
-
+    choix = -1
     while choix != 0:
         # Boucle de navigation principale (choix utilisateur)
+        afficher_menu_g_comptes()
+        choix = saisir_choix(valeurs_autorisees={0, 1, 2, 3, 4, 5})
+
         match choix:
             case 1:  # Solde
-                boucle = 'O'
-                while boucle.upper() != 'N':
+                afficher = True
+                while afficher or saisie_oui_non("Souhaitez-vous consulter le solde d’un autre compte ? (O/N) : "):
+                    afficher = False
                     choix_compte = selection_compte(lst_cpt, courant=False)
                     solde = dict_soldes[choix_compte]
                     print(f"\n|-----Solde d'un compte-----|\n"
                           f"| Vous avez {solde:.2f} € sur votre compte \"{choix_compte}\" |")
 
-                    boucle = ""
-                    while boucle.upper() not in ['O', 'N']:
-                        boucle = input("Souhaitez-vous consulter le solde d'un autre compte ? (O/N) : ")
-                        if boucle.upper() not in ['O', 'N']:
-                            print("Veuillez répondre par 'O' pour Oui ou 'N' pour Non.")
             case 2:  # Ajout compte
-                boucle = 'O'
-                while boucle.upper() != 'N':
+                afficher = True
+                while afficher or saisie_oui_non("Souhaitez-vous ajouter un autre compte ? (O/N) : "):
+                    afficher = False
                     print("|-----Ajout de compte-----|")
                     nouveau_compte = input("Quel est le nom du nouveau compte ? : ")
                     succes_ajout = ajout_compte(lst_cpt, nouveau_compte.title())
-                    if succes_ajout:
-                        demande_solde_init = ""
-                        while demande_solde_init.upper() not in ['O', 'N']:
-                            demande_solde_init = input("Souhaitez-vous charger le solde initial ? (O/N) : ")
-                            if demande_solde_init.upper() not in ['O', 'N']:
-                                print("Veuillez répondre par 'O' pour Oui ou 'N' pour Non.")
-                        if demande_solde_init.upper() == 'O':
-                            virement_solde_init = creer_virement(lst_cpt, dict_soldes,
-                                                                 is_nouveau_compte=True,
-                                                                 nouveau_compte=nouveau_compte.title())
-                            ajout_virement(virement_solde_init, lst_ope, dict_soldes)
-                    boucle = ""
-                    while boucle.upper() not in ['O', 'N']:
-                        boucle = input("Souhaitez-vous ajouter un autre compte ? (O/N) : ")
-                        if boucle.upper() not in ['O', 'N']:
-                            print("Veuillez répondre par 'O' pour Oui ou 'N' pour Non.")
+                    if succes_ajout and saisie_oui_non("Souhaitez-vous charger le solde initial ? (O/N) : "):
+                        virement_solde_init = creer_virement(lst_cpt, dict_soldes, is_nouveau_compte=True,
+                                                             nouveau_compte=nouveau_compte.title())
+                        ajout_virement(virement_solde_init, lst_ope, dict_soldes)
+
             case 3:  # Afficher les opérations d'un compte
-                boucle = 'O'
-                while boucle.upper() != 'N':
+                afficher = True
+                while afficher or saisie_oui_non("Souhaitez-vous consulter un autre compte ? (O/N) : "):
+                    afficher = False
                     print("|-----Affichage des opérations d'un compte-----|")
                     compte = selection_compte(lst_cpt, courant=False)
-                    choix_filtrer_date = ""
-                    while choix_filtrer_date.upper() not in {'O', 'N'}:
-                        choix_filtrer_date = input("Voulez-vous filtrer les opérations entre deux dates ? (O/N) : ")
-                        if choix_filtrer_date.upper() not in {'O', 'N'}:
-                            print("Veuillez répondre par 'O' pour Oui ou 'N' pour Non.")
-                    afficher_operations(lst_ope, compte, filtre_date=(choix_filtrer_date.upper() == 'O'))
+                    filtrer = saisie_oui_non("Voulez-vous filtrer les opérations entre deux dates ? (O/N) : ")
+                    afficher_operations(lst_ope, compte, filtre_date=filtrer)
 
-                    boucle = ""
-                    while boucle.upper() not in ['O', 'N']:
-                        boucle = input("Souhaitez-vous consulter un autre compte ? (O/N) : ")
-                        if boucle.upper() not in ['O', 'N']:
-                            print("Veuillez répondre par 'O' pour Oui ou 'N' pour Non.")
             case 4:  # Ajouter une opération
-                boucle = 'O'
-                while boucle.upper() != 'N':
+                afficher = True
+                while afficher or saisie_oui_non("Souhaitez-vous ajouter une autre opération ? (O/N) : "):
+                    afficher = False
                     print("|-----Ajout d'opération-----|")
                     operation = creation_operation(lst_cpt, lst_bud)
                     ajout_operation(lst_ope, operation)
-                    affichage_ope = formatter_operation(operation)
-                    print(f"Opération :\n{affichage_ope}\najoutée avec succès.")
+                    print(f"Opération :\n{formatter_operation(operation)}\najoutée avec succès.")
 
-                    boucle = ""
-                    while boucle.upper() not in ['O', 'N']:
-                        boucle = input("Souhaitez-vous ajouter une autre opération ? (O/N) : ")
-                        if boucle.upper() not in ['O', 'N']:
-                            print("Veuillez répondre par 'O' pour Oui ou 'N' pour Non.")
             case 5:  # Effectuer un virement entre comptes
-                boucle = 'O'
-                while boucle.upper() != 'N':
+                afficher = True
+                while afficher or saisie_oui_non("Souhaitez-vous effectuer un autre virement ? (O/N) : "):
+                    afficher = False
                     print("|-----Virement compte A -> compte B-----|")
                     nouveau_virement = creer_virement(lst_cpt, dict_soldes)
                     ajout_virement(nouveau_virement, lst_ope, dict_soldes)
 
-                    boucle = ""
-                    while boucle.upper() not in ['O', 'N']:
-                        boucle = input("Souhaitez-vous effectuer un autre virement ? (O/N) : ")
-                        if boucle.upper() not in ['O', 'N']:
-                            print("Veuillez répondre par 'O' pour Oui ou 'N' pour Non.")
-
-        lst_ope = sorted(lst_ope, key=lambda ope: ope[0])  # Trie la liste des opérations par rapport à leur date
+        lst_ope = sorted(lst_ope, key=lambda ope: ope[0])  # Trie chronologiquement les opérations avant enregistrement
         enregistrement_modif(lst_cpt, lst_ope, lst_bud, identifiant, cle_cryptage)
+        print("Données enregistrées dans la base de données avec succès.")
 
-        afficher_menu_g_comptes()
-        choix = saisir_choix(valeurs_autorisees={0, 1, 2, 3, 4, 5})

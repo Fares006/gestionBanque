@@ -1,0 +1,15 @@
+# -*- coding: utf-8 -*-
+# constantes.py
+IDX_OPE_DATE = 0
+IDX_OPE_LIB = 1
+IDX_OPE_CPT = 2
+IDX_OPE_MONTANT = 3
+IDX_OPE_MODE = 4
+IDX_OPE_ETAT = 5
+IDX_OPE_BUD = 6
+
+IDX_BUD_NOM = 0
+IDX_BUD_MONTANT = 1
+IDX_BUD_CPT = 2
+
+CLE_CRYPTAGE = 23

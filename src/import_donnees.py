@@ -8,7 +8,9 @@
 # --Imports-- #
 import datetime
 
-from cryptage_decryptage import CLE_CRYPTAGE, decryptage
+from constantes import CLE_CRYPTAGE
+from cryptage_decryptage import decryptage
+from utils import verifier_integrite_fichier
 
 
 # --Constantes-- #
@@ -34,17 +36,29 @@ def import_idents(chemin_fichier: str, cle: int = CLE_CRYPTAGE) -> dict:
               et une liste d'informations associées comme valeurs :
               [mot_de_passe (str), nom (str), cle_utilisateur (int)]
     """
-    # Ouverture du fichier et initialisation des variables nécessaires
+    # Initialise un dictionnaire vide qui contiendra les identifiants et leurs informations associées
     dic_ident = dict()
-    with open(file=chemin_fichier, mode='r', encoding="utf-8") as idents:
-        ligne = idents.readline()
-        ligne = decryptage(ligne, cle=cle)
-        while ligne != '':
-            liste_intermediaire = ligne.strip('\n').split('*')
-            dic_ident[liste_intermediaire[0]] = liste_intermediaire[1:]
-            dic_ident[liste_intermediaire[0]][-1] = int(dic_ident[liste_intermediaire[0]][-1])
-            ligne = idents.readline()
-            ligne = decryptage(ligne, cle=cle)
+
+    # Ouverture du fichier contenant les identifiants cryptés en lecture (texte), avec encodage UTF-8
+    with open(chemin_fichier, mode='r', encoding="utf-8") as idents:
+        # Lecture ligne par ligne du fichier
+        for ligne in idents:
+            # Décryptage de la ligne à l'aide de la clé fournie, puis suppression des espaces et sauts de ligne
+            ligne = decryptage(ligne, cle=cle).strip()
+
+            # Découpage de la ligne en champs, à partir du séparateur '*'
+            champs = ligne.split('*')
+
+            # Vérifie que la structure minimale attendue est respectée (ex: 'Identifiant*MotDePasse*Prénom*Clé')
+            if len(champs) != 4:
+                continue    # Ligne ignorée si elle est mal formée
+
+            identifiant, mdp, nom, cle_str = champs     # Attribution explicite des champs à des variables distinctes
+
+            # Enregistrement dans le dictionnaire, avec conversion de la clé en entier
+            dic_ident[identifiant] = [mdp, nom, int(cle_str)]
+
+    # Retour du dictionnaire contenant l'ensemble des identifiants et de leurs données
     return dic_ident
 
 
@@ -53,26 +67,46 @@ def import_comptes(chemin_fichier: str, cle: int) -> list:
     Importe et décrypte les lignes correspondant aux comptes d’un utilisateur
     depuis son fichier personnel, et renvoie la liste des noms de comptes.
 
-    Le fichier est lu ligne par ligne et chaque ligne est décryptée à l’aide de la clé fournie.
-    Seules les lignes commençant par "CPT" sont traitées (convention pour les comptes).
-    La lecture s'arrête dès qu'une ligne ne correspond plus à un compte.
+    Le fichier est lu ligne par ligne, chaque ligne est décryptée à l’aide de la clé fournie.
+    Seules les lignes commençant par "CPT" sont considérées comme valides (convention).
+    La lecture s'interrompt dès qu'une ligne ne commence plus par "CPT".
 
     Args:
-        chemin_fichier (str): Le chemin relatif ou absolu vers le fichier de l'utilisateur (ex: users/23456789.txt)
-        cle (int): La clé de décryptage à utiliser (obtenue lors de l'identification)
+        chemin_fichier (str): Chemin vers le fichier personnel de l'utilisateur (ex: users/12345678.txt).
+        cle (int): Clé de décryptage à utiliser pour chaque ligne.
 
     Returns:
         list: Liste des noms de comptes (str) associés à l'utilisateur.
     """
-    with open(file=chemin_fichier, mode='r', encoding="utf-8") as fichier:
-        liste_comptes = []
-        ligne = fichier.readline()
-        ligne = decryptage(ligne, cle)
-        while ligne != '' and ligne[:3] == 'CPT':
-            liste_intermediaire = ligne.strip('\n').split('*')
-            liste_comptes.append(liste_intermediaire[1])
-            ligne = fichier.readline()
-            ligne = decryptage(ligne, cle)
+    # Vérification de l'intégrité du fichier avant traitement
+    if not verifier_integrite_fichier(chemin_fichier, cle):
+        print("Erreur : le fichier utilisateur semble altéré ou corrompu.")
+        return []
+
+    liste_comptes = []
+
+    # Ouverture du fichier utilisateur en lecture (texte) avec encodage UTF-8
+    with open(chemin_fichier, mode='r', encoding="utf-8") as fichier:
+        # Lecture ligne par ligne du fichier
+        for ligne in fichier:
+            # Décryptage de la ligne à l'aide de la clé fournie, puis suppression des espaces et sauts de ligne
+            ligne = decryptage(ligne, cle=cle).strip()
+
+            # Vérifie que la ligne suit la convention d'un compte : commence par 'CPT'
+            if not ligne.startswith('CPT'):
+                break  # On arrête dès qu'on sort de la section comptes
+
+            # Découpage de la ligne en champs, à partir du séparateur '*'
+            champs = ligne.split('*')
+
+            # Vérifie que la structure minimale attendue est respectée (ex: 'CPT*NomDuCompte')
+            if len(champs) < 2:
+                continue  # Ligne ignorée si elle est mal formée
+
+            # Ajout du nom du compte à la liste (position 1)
+            liste_comptes.append(champs[1])
+
+    # Retour de la liste finale des comptes
     return liste_comptes
 
 
@@ -80,38 +114,77 @@ def import_operations(chemin_fichier: str, cle: int) -> list:
     """
     Importe et décrypte les opérations bancaires d’un utilisateur à partir de son fichier personnel.
 
-    Seules les lignes commençant par "OPE" sont traitées. Chaque ligne est convertie en tuple contenant :
-        - date (datetime.date) : Date de l'opération (au format jj/mm/aaaa)
+    Le fichier est lu ligne par ligne, chaque ligne est décryptée à l’aide de la clé fournie.
+    Seules les lignes commençant par "OPE" sont considérées comme des opérations valides.
+
+    Chaque ligne est ensuite convertie en tuple contenant :
+        - date (datetime.date) : Date de l'opération (format jj/mm/aaaa)
         - libellé (str) : Description de l'opération
         - compte (str) : Nom du compte concerné
         - montant (float) : Montant de l'opération
         - mode de paiement (str) : Type de paiement (ex: CB, CHE, VIR)
         - état (bool) : Statut de l'opération (True si passée, False sinon)
-        - budget (str) : Budget auquel l'opération est rattachée
+        - budget (str) : Nom du budget associé
 
     Args:
-        chemin_fichier (str): Chemin relatif ou absolu vers le fichier utilisateur (ex: users/23456789.txt)
-        cle (int): Clé de décryptage à utiliser pour lire le contenu du fichier.
+        chemin_fichier (str): Chemin vers le fichier personnel de l'utilisateur (ex: users/12345678.txt).
+        cle (int): Clé de décryptage à utiliser pour chaque ligne.
 
     Returns:
         list: Liste de tuples représentant les opérations de l'utilisateur.
     """
-    with open(file=chemin_fichier, mode='r', encoding="utf-8") as fichier:
-        liste_ope = []
-        ligne = fichier.readline()
-        ligne = decryptage(ligne, cle)
-        while ligne != '':
-            if ligne[:3] == 'OPE':
-                liste_intermediaire = ligne.strip('\n').split('*')
-                liste_intermediaire.pop(0)  # On se débarrasse de 'OPE'
-                liste_intermediaire[0] = datetime.date(year=int(liste_intermediaire[0][6:]),
-                                                       month=int(liste_intermediaire[0][3:5]),
-                                                       day=int(liste_intermediaire[0][0:2]))
-                liste_intermediaire[3] = float(liste_intermediaire[3])
-                liste_intermediaire[5] = bool(liste_intermediaire[5])
-                liste_ope.append(tuple(liste_intermediaire))
-            ligne = fichier.readline()
-            ligne = decryptage(ligne, cle)
+    # Vérification de l'intégrité du fichier avant traitement
+    if not verifier_integrite_fichier(chemin_fichier, cle):
+        print("Erreur : le fichier utilisateur semble altéré ou corrompu.")
+        return []
+
+    from constantes import (
+        IDX_OPE_DATE,
+        IDX_OPE_MONTANT,
+        IDX_OPE_ETAT
+    )
+
+    liste_ope = []
+
+    # Ouverture du fichier utilisateur en lecture (texte) avec encodage UTF-8
+    with open(chemin_fichier, mode='r', encoding="utf-8") as fichier:
+        # Lecture ligne par ligne du fichier
+        for ligne in fichier:
+            # Décryptage de la ligne à l'aide de la clé fournie, puis suppression des espaces et sauts de ligne
+            ligne = decryptage(ligne, cle=cle).strip()
+
+            # Vérifie que la ligne suit la convention d'une opération : commence par 'OPE'
+            if not ligne.startswith('OPE'):
+                continue  # On ignore les lignes hors section opérations
+
+            # Découpage de la ligne en champs, à partir du séparateur '*'
+            champs = ligne.split('*')
+
+            # Vérifie que la structure minimale attendue est respectée :
+            # (OPE*date*libellé*compte*montant*mode*état*budget)
+            if len(champs) != 8:
+                continue  # Ligne ignorée si elle est mal formée
+
+            # Suppression du préfixe 'OPE'
+            champs.pop(0)
+
+            # Conversion du champ date (au format jj/mm/aaaa) en objet datetime.date
+            champs[IDX_OPE_DATE] = datetime.date(
+                year=int(champs[IDX_OPE_DATE][6:]),
+                month=int(champs[IDX_OPE_DATE][3:5]),
+                day=int(champs[IDX_OPE_DATE][0:2])
+            )
+
+            # Conversion du montant en float
+            champs[IDX_OPE_MONTANT] = float(champs[IDX_OPE_MONTANT])
+
+            # Conversion de l'état en booléen (à partir d'une chaîne "True" ou "False")
+            champs[IDX_OPE_ETAT] = champs[IDX_OPE_ETAT] == 'True'
+
+            # Ajout de l'opération sous forme de tuple dans la liste
+            liste_ope.append(tuple(champs))
+
+    # Retour de la liste finale des opérations bancaires
     return liste_ope
 
 
@@ -119,33 +192,58 @@ def import_budgets(chemin_fichier: str, cle: int) -> list:
     """
     Importe et décrypte les budgets d’un utilisateur à partir de son fichier personnel.
 
-    Seules les lignes commençant par "BUD" sont prises en compte. Chaque ligne est convertie
-    en une liste contenant les informations suivantes :
-        - libellé du budget (str) : Catégorie de dépenses (ex: alimentation, loisirs)
-        - montant alloué (float) : Plafond budgétaire mensuel autorisé
-        - compte associé (str) : Nom du compte rattaché à ce budget
+    Le fichier est lu ligne par ligne, chaque ligne est décryptée à l’aide de la clé fournie.
+    Seules les lignes commençant par "BUD" sont considérées comme valides (convention).
+
+    Chaque ligne est ensuite convertie en liste contenant :
+        - libellé (str) : Nom de la catégorie budgétaire
+        - montant (float) : Plafond mensuel autorisé
+        - compte associé (str) : Compte bancaire rattaché à ce budget
 
     Args:
-        chemin_fichier (str): Chemin relatif ou absolu vers le fichier utilisateur (ex: users/23456789.txt)
-        cle (int): Clé de décryptage à utiliser pour lire le contenu du fichier.
+        chemin_fichier (str): Chemin vers le fichier personnel de l'utilisateur (ex: users/12345678.txt).
+        cle (int): Clé de décryptage à utiliser pour chaque ligne.
 
     Returns:
         list: Liste de listes représentant les budgets de l'utilisateur.
     """
-    with open(file=chemin_fichier, mode='r', encoding="utf-8") as fichier:
-        liste_bud = []
-        ligne = fichier.readline()
-        ligne = decryptage(ligne, cle)
-        while ligne != '':
-            if ligne[:3] == 'BUD':
-                liste_intermediaire = ligne.strip('\n').split('*')
-                liste_intermediaire.pop(0)
-                liste_intermediaire[1] = float(liste_intermediaire[1])
-                liste_bud.append(liste_intermediaire)
-            ligne = fichier.readline()
-            ligne = decryptage(ligne, cle)
+    # Vérification de l'intégrité du fichier avant traitement
+    if not verifier_integrite_fichier(chemin_fichier, cle):
+        print("Erreur : le fichier utilisateur semble altéré ou corrompu.")
+        return []
+
+    from constantes import (
+        IDX_BUD_MONTANT
+    )
+
+    liste_bud = []
+
+    # Ouverture du fichier utilisateur en lecture (texte) avec encodage UTF-8
+    with open(chemin_fichier, mode='r', encoding="utf-8") as fichier:
+        # Lecture ligne par ligne du fichier
+        for ligne in fichier:
+            # Décryptage de la ligne à l'aide de la clé fournie, puis suppression des espaces et sauts de ligne
+            ligne = decryptage(ligne, cle=cle).strip()
+
+            # Vérifie que la ligne suit la convention d'un budget : commence par 'BUD'
+            if not ligne.startswith('BUD'):
+                continue  # On ignore les lignes hors section budgets
+
+            # Découpage de la ligne en champs, à partir du séparateur '*'
+            champs = ligne.split('*')
+
+            # Vérifie que la structure minimale attendue est respectée (BUD*nom*montant*compte)
+            if len(champs) != 4:
+                continue  # Ligne ignorée si elle est mal formée
+
+            # Suppression du préfixe 'BUD'
+            champs.pop(0)
+
+            # Conversion du montant en float
+            champs[IDX_BUD_MONTANT] = float(champs[IDX_BUD_MONTANT])
+
+            # Ajout du budget sous forme de liste dans la liste principale
+            liste_bud.append(champs)
+
+    # Retour de la liste finale des budgets
     return liste_bud
-
-
-# --Programme principal--
-
