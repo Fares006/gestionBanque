@@ -35,7 +35,7 @@ Ce projet a été réalisé dans le cadre des cours de **M. Jérôme Delobelle**
 1. Installer [Python 3.12](https://www.python.org/downloads/).
 2. Cloner le dépôt :  
    ```sh
-   git clone https://github.com/votre-utilisateur/gestionBanque.git
+   git clone https://github.com/Fares006/gestionBanque.git
    cd gestionBanque
    ```
 
